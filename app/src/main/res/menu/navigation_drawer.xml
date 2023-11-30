@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group
+        android:id="@+id/drawer_top"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/drawer_home"
+            android:icon="@drawable/drawer_home"
+            android:title="@string/drawer_home" />
+        <item
+            android:id="@+id/drawer_connect"
+            android:icon="@drawable/drawer_connect"
+            android:title="@string/drawer_connect" />
+        <item
+            android:id="@+id/drawer_mouse"
+            android:icon="@drawable/drawer_mouse"
+            android:title="@string/drawer_mouse" />
+        <item
+            android:id="@+id/drawer_touchpad"
+            android:icon="@drawable/drawer_touchpad"
+            android:title="@string/drawer_touchpad" />
+        <item
+            android:id="@+id/drawer_slides_controller"
+            android:icon="@drawable/drawer_slides_controller"
+            android:title="@string/drawer_slides_controller" />
+    </group>
+
+
+</menu>
+

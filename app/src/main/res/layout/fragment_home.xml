@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent" android:layout_height="match_parent"
+        android:padding="20dp"
+        android:orientation="vertical">
+
+    <ImageView
+            android:id="@+id/home_status"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:background="@drawable/home_status" />
+
+    <TextView
+            android:id="@+id/home_status_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="@string/home_status_init"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+    <TextView
+            android:id="@+id/home_debug_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="@string/home_debug_disabled"
+            android:visibility="gone"/>
+
+    <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/home_container"
+            android:layout_marginHorizontal="0dp"
+            android:layout_marginBottom="0dp"
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+    <Button
+            android:id="@+id/home_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:enabled="false"
+            android:text="@string/home_button_init"/>
+</LinearLayout>
