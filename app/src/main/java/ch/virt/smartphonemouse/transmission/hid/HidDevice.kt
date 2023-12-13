@@ -88,23 +88,24 @@ class HidDevice
      * Registers the app as a hid.
      */
     fun register() {
-        if (ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.BLUETOOTH_CONNECT
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            if (!isRegistered)
-                Log.d(TAG, "Register Result: " + service!!.registerApp(
-                    createSDP(),
-                    null,
-                    null,
-                    context.mainExecutor,
-                    this
-                ))
-            else Log.d(
-                TAG, "The Device is already registered!"
-            )
-        }
+//        if (ActivityCompat.checkSelfPermission(
+//                context,
+//                Manifest.permission.BLUETOOTH_CONNECT
+//            ) == PackageManager.PERMISSION_GRANTED
+//        ) {
+//
+//        }
+        if (!isRegistered)
+            Log.d(TAG, "Register Result: " + service!!.registerApp(
+                createSDP(),
+                null,
+                null,
+                context.mainExecutor,
+                this
+            ))
+        else Log.d(
+            TAG, "The Device is already registered!"
+        )
     }
 
     override fun onAppStatusChanged(pluggedDevice: BluetoothDevice, registered: Boolean) {
@@ -151,15 +152,16 @@ class HidDevice
         if (bluetooth.reInitRequired()) return
         if (isRegistered && !isConnected && !isConnecting) {
             device = bluetooth.fromHostDevice(deviceH)
-            if (ActivityCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.BLUETOOTH_CONNECT
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
-                service?.connect(device)
-                isConnecting = true
-                (context as MainActivity).updateBluetoothStatus()
-            }
+//            if (ActivityCompat.checkSelfPermission(
+//                    context,
+//                    Manifest.permission.BLUETOOTH_CONNECT
+//                ) == PackageManager.PERMISSION_GRANTED
+//            ) {
+//
+//            }
+            service?.connect(device)
+            isConnecting = true
+            (context as MainActivity).updateBluetoothStatus()
         } else Log.d(
             TAG,
             "Cannot connect to host whilst connecting or being connected and must be registered"
@@ -170,14 +172,16 @@ class HidDevice
      * Disconnects from the host device.
      */
     fun disconnect() {
+        Log.d(TAG, "" + isRegistered + isConnected + isConnecting)
         if (isRegistered && isConnected && !isConnecting) {
-            if (ActivityCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.BLUETOOTH_CONNECT
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
-                service!!.disconnect(device)
-            }
+//            if (ActivityCompat.checkSelfPermission(
+//                    context,
+//                    Manifest.permission.BLUETOOTH_CONNECT
+//                ) == PackageManager.PERMISSION_GRANTED
+//            ) {
+//
+//            }
+            service!!.disconnect(device)
         } else Log.d(TAG, "Cannot connect to host whilst connecting or not being connected")
     }
 
@@ -202,13 +206,14 @@ class HidDevice
         report[1] = x.toByte()
         report[2] = y.toByte()
         report[3] = wheel.toByte()
-        if (ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.BLUETOOTH_CONNECT
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            service!!.sendReport(device, 1, report) // id 1 because of the descriptor
-        }
+//        if (ActivityCompat.checkSelfPermission(
+//                context,
+//                Manifest.permission.BLUETOOTH_CONNECT
+//            ) == PackageManager.PERMISSION_GRANTED
+//        ) {
+//
+//        }
+        service!!.sendReport(device, 1, report) // id 1 because of the descriptor
     }
 
     /**

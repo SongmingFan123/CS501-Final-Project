@@ -14,7 +14,6 @@ import android.provider.Settings
 import android.view.View
 import android.view.WindowManager
 import android.widget.Button
-import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
@@ -180,11 +179,37 @@ class AddDialog
     }
 
     /**
+     * This method shows the fragment which tells the user that the device is already added.
+     */
+    fun showAlready() {
+        state = ALREADY_STATE
+        setFragment(AddAlreadySubdialog())
+        dialog!!.setTitle(getString(R.string.dialog_add_already_title))
+        neutralButton!!.visibility = View.GONE
+        negativeButton!!.visibility = View.GONE
+        positiveButton!!.visibility = View.VISIBLE
+        positiveButton!!.setText(R.string.dialog_add_already_positive)
+    }
+
+    /**
+     * This method shows the fragment which tells the user that the device was added successfully.
+     */
+    fun showSuccess() {
+        state = SUCCESS_STATE
+        setFragment(AddSuccessSubdialog(target))
+        dialog!!.setTitle(getString(R.string.dialog_add_success_title))
+        neutralButton!!.visibility = View.GONE
+        negativeButton!!.visibility = View.GONE
+        positiveButton!!.visibility = View.VISIBLE
+        positiveButton!!.setText(R.string.dialog_add_success_positive)
+    }
+
+    /**
      * Adds the target device to the device storage and displays the success message.
      */
     fun finished() {
         bluetoothHandler?.devices?.addDevice(HostDevice(target?.address, target?.name))
-        Toast.makeText(context, "Add successfully", Toast.LENGTH_SHORT).show()
+        showSuccess()
     }
 
     /**
@@ -194,7 +219,9 @@ class AddDialog
     fun selected(device: DiscoveredDevice?) {
         target = device
         if (device != null) {
-            if (bluetoothHandler!!.isBonded(device.address)) showBonded() else finished()
+            if (bluetoothHandler?.devices
+                    ?.hasDevice(device.address) == true
+            ) showAlready() else if (bluetoothHandler!!.isBonded(device.address)) showBonded() else finished()
         }
     }
 

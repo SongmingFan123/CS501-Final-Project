@@ -33,9 +33,6 @@ class SlidesControllerFragment: Fragment(R.layout.fragment_slides_controller) {
     private var scrollLength = 0
     private var specialIntensity = 0
     private var specialLength = 0
-    private var leftView: View? = null
-    private var rightView: View? = null
-    private var middleView: View? = null
     private var vibrator: Vibrator? = null
 
     // Buttons
@@ -176,33 +173,7 @@ class SlidesControllerFragment: Fragment(R.layout.fragment_slides_controller) {
         horizontal.y = middleHeight.toFloat()
         horizontal.x = 0f
         root!!.addView(horizontal)
-        leftView = View(context)
-        leftView!!.setBackgroundResource(if (theme) R.color.mouse_pressed_dark else R.color.mouse_pressed_light)
-        leftView!!.alpha = viewIntensity
-        leftView!!.layoutParams =
-            FrameLayout.LayoutParams(leftWidth - buttonsStrokeWeight / 2, leftHeight)
-        leftView!!.x = leftX.toFloat()
-        leftView!!.y = leftY.toFloat()
-        root!!.addView(leftView)
-        rightView = View(context)
-        rightView!!.setBackgroundResource(if (theme) R.color.mouse_pressed_dark else R.color.mouse_pressed_light)
-        rightView!!.alpha = viewIntensity
-        rightView!!.layoutParams =
-            FrameLayout.LayoutParams(rightWidth - buttonsStrokeWeight / 2, rightHeight)
-        rightView!!.x = (rightX + buttonsStrokeWeight / 2).toFloat()
-        rightView!!.y = rightY.toFloat()
-        root!!.addView(rightView)
-        middleView = View(context)
-        middleView!!.setBackgroundResource(if (theme) R.color.mouse_pressed_dark else R.color.mouse_pressed_light)
-        middleView!!.alpha = viewIntensity
-        middleView!!.layoutParams =
-            FrameLayout.LayoutParams(middleWidth - buttonsStrokeWeight, middleHeight)
-        middleView!!.x = (middleX + buttonsStrokeWeight / 2).toFloat()
-        middleView!!.y = middleY.toFloat()
-        root!!.addView(middleView)
-        leftView!!.visibility = View.INVISIBLE
-        rightView!!.visibility = View.INVISIBLE
-        middleView!!.visibility = View.INVISIBLE
+
     }
 
 

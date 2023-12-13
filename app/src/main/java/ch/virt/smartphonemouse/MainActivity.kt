@@ -1,11 +1,13 @@
 package ch.virt.smartphonemouse
 
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.drawerlayout.widget.DrawerLayout.DrawerListener
 import androidx.fragment.app.Fragment
@@ -13,24 +15,31 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
 import ch.virt.smartphonemouse.customization.DefaultSettings
+import ch.virt.smartphonemouse.mouse.MouseInputs
+import ch.virt.smartphonemouse.mouse.MovementHandler
+import ch.virt.smartphonemouse.mouse.Parameters
 import ch.virt.smartphonemouse.transmission.BluetoothHandler
+import ch.virt.smartphonemouse.transmission.DebugTransmitter
 import ch.virt.smartphonemouse.ui.ConnectFragment
 import ch.virt.smartphonemouse.ui.HomeFragment
 import ch.virt.smartphonemouse.ui.MouseFragment
 import ch.virt.smartphonemouse.ui.SlidesControllerFragment
 import ch.virt.smartphonemouse.ui.TouchpadFragment
+import ch.virt.smartphonemouse.ui.settings.dialog.CalibrateDialog
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
 
-/**
- * This class is the main activity of this app.
- */
+private const val TAG = "MainActivity"
 class MainActivity : AppCompatActivity(),
     PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
     private var bar: MaterialToolbar? = null
     private var drawerLayout: DrawerLayout? = null
     private var drawer: NavigationView? = null
     private var bluetooth: BluetoothHandler? = null
+    private var movement: MovementHandler? = null
+    private var inputs: MouseInputs? = null
+    private var debug: DebugTransmitter? = null
+    private var mouseActive = false
     private var instanceSaved = false // Used to avoid ui changes if the activity is not rendered.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,11 +48,15 @@ class MainActivity : AppCompatActivity(),
         loadComponents()
         setupNavigation()
         loadContent()
+        startDebugging()
         navigate(R.id.drawer_home)
         drawer!!.setCheckedItem(R.id.drawer_home)
     }
 
-
+    private fun startDebugging() {
+        debug = DebugTransmitter(PreferenceManager.getDefaultSharedPreferences(this))
+        debug!!.connect()
+    }
 
     /**
      * Loads the components into their variables.
@@ -105,6 +118,8 @@ class MainActivity : AppCompatActivity(),
      */
     private fun loadContent() {
         bluetooth = BluetoothHandler(this)
+        inputs = MouseInputs(bluetooth!!, this)
+        movement = MovementHandler(this, inputs!!)
     }
 
     /**
@@ -112,8 +127,10 @@ class MainActivity : AppCompatActivity(),
      */
     fun updateBluetoothStatus() {
         if (instanceSaved || currentFragment == null) return
-        if (currentFragment is ConnectFragment ) {
-            if (!bluetooth!!.isEnabled || !bluetooth!!.isSupported) navigate(R.id.drawer_home)
+        if (currentFragment is ConnectFragment || currentFragment is MouseFragment) {
+            if (!bluetooth!!.isEnabled || !bluetooth!!.isSupported) navigate(R.id.drawer_home) else if (!bluetooth!!.isConnected && currentFragment is MouseFragment) navigate(
+                R.id.drawer_connect
+            )
         }
         runOnUiThread { if (currentFragment is HomeFragment) (currentFragment as HomeFragment?)!!.update() else if (currentFragment is ConnectFragment) (currentFragment as ConnectFragment?)!!.update() }
     }
@@ -143,38 +160,55 @@ class MainActivity : AppCompatActivity(),
      * @return whether that entry is navigated
      */
     fun navigate(entry: Int): Boolean {
+        if (entry == R.id.drawer_mouse) {
+            Log.d(TAG, "isCalibrated: " + Parameters(PreferenceManager.getDefaultSharedPreferences(this)).isCalibrated)
+            if (!Parameters(PreferenceManager.getDefaultSharedPreferences(this)).isCalibrated) { // Make sure that the sampling rate is calibrated
+                val dialog = CalibrateDialog()
+                dialog.show(supportFragmentManager, null)
+                return true
+            }
+            bar!!.visibility = View.GONE
+            switchFragment(MouseFragment(inputs, movement), false)
+            mouseActive = true
+            movement!!.create(debug)
+            debug!!.connect()
+            debug!!.startTransmission()
+            movement!!.register()
+            inputs!!.start()
+        } else {
+            bar!!.visibility = View.VISIBLE
+            if (mouseActive) {
+                movement!!.unregister()
+                debug!!.endTransmission()
+                inputs!!.stop()
+                mouseActive = false
+            }
+            when (entry) {
+                R.id.drawer_connect -> {
+                    switchFragment(ConnectFragment(bluetooth), false)
+                    bar!!.setTitle(R.string.title_connect)
+                }
 
-        bar!!.visibility = View.VISIBLE
+                R.id.drawer_home -> {
+                    switchFragment(HomeFragment(bluetooth), false)
+                    bar!!.setTitle(R.string.title_home)
+                }
 
-        when (entry) {
-            R.id.drawer_connect -> {
-                switchFragment(ConnectFragment(bluetooth), false)
-                bar!!.setTitle(R.string.title_connect)
-            }
+                R.id.drawer_touchpad -> {
+                    switchFragment(TouchpadFragment(), false)
+                    bar!!.visibility = View.GONE
+                }
+                R.id.drawer_slides_controller -> {
+                    switchFragment(SlidesControllerFragment(), false)
+                    bar!!.visibility = View.GONE
+                }
 
-            R.id.drawer_home -> {
-                switchFragment(HomeFragment(bluetooth), false)
-                bar!!.setTitle(R.string.title_home)
-            }
-            R.id.drawer_mouse -> {
-                switchFragment(MouseFragment(), false)
-                bar!!.visibility = View.GONE
-            }
-            R.id.drawer_touchpad -> {
-                switchFragment(TouchpadFragment(), false)
-                bar!!.visibility = View.GONE
-            }
-            R.id.drawer_slides_controller -> {
-                switchFragment(SlidesControllerFragment(), false)
-                bar!!.visibility = View.GONE
-            }
-
-            else -> {
-                Toast.makeText(this, "Not yet implemented!", Toast.LENGTH_SHORT).show()
-                return false
+                else -> {
+                    Toast.makeText(this, "Not yet implemented!", Toast.LENGTH_SHORT).show()
+                    return false
+                }
             }
         }
-
         drawer!!.setCheckedItem(entry)
         return true
     }
@@ -205,6 +239,7 @@ class MainActivity : AppCompatActivity(),
         if (supportFragmentManager.backStackEntryCount > 0) super.onBackPressed() // If something is on the backstack proceed
         else {
             if (currentFragment !is HomeFragment) { // Navigate to home if not in sub fragment and not in home
+                if (currentFragment !is MouseFragment) navigate(R.id.drawer_home) // Make exception for mouse fragment
             } else super.onBackPressed()
         }
     }

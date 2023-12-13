@@ -48,28 +48,30 @@ class BluetoothDiscoverer(context: Context, private val adapter: BluetoothAdapte
      * Starts the discovery for new devices.
      */
     fun startDiscovery() {
-        if (ctxReference?.get()?.let {
-                ActivityCompat.checkSelfPermission(
-                    it,
-                    Manifest.permission.BLUETOOTH_SCAN
-                )
-            } == PackageManager.PERMISSION_GRANTED
-        ) {
-            adapter!!.startDiscovery()
-        }
+//        if (ctxReference?.get()?.let {
+//                ActivityCompat.checkSelfPermission(
+//                    it,
+//                    Manifest.permission.BLUETOOTH_SCAN
+//                )
+//            } == PackageManager.PERMISSION_GRANTED
+//        ) {
+//
+//        }
+        adapter!!.startDiscovery()
     }
 
     /**
      * Stops the discovery
      */
     fun stopDiscovery() {
-        if (ctxReference?.get()?.let {
-                ActivityCompat.checkSelfPermission(
-                    it,
-                    Manifest.permission.BLUETOOTH_SCAN
-                )
-            } == PackageManager.PERMISSION_GRANTED
-        ) adapter!!.cancelDiscovery()
+//        if (ctxReference?.get()?.let {
+//                ActivityCompat.checkSelfPermission(
+//                    it,
+//                    Manifest.permission.BLUETOOTH_SCAN
+//                )
+//            } == PackageManager.PERMISSION_GRANTED
+//        )
+            adapter!!.cancelDiscovery()
     }
 
     /**

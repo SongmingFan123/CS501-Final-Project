@@ -34,17 +34,24 @@ class ConnectConnectedSubfragment
         elapsed = view.findViewById(R.id.connect_connected_device_elapsed)
         name = view.findViewById(R.id.connect_connected_device_name)
         disconnect = view.findViewById(R.id.connect_connected_disconnect)
+        mouse = view.findViewById(R.id.connect_connected_mouse)
         if (bluetooth!!.isConnected) {
-            if (ActivityCompat.checkSelfPermission(requireContext(),
-                    Manifest.permission.BLUETOOTH_CONNECT
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
-                name?.setText(bluetooth.host?.device?.name)
-            }
+//            if (ActivityCompat.checkSelfPermission(requireContext(),
+//                    Manifest.permission.BLUETOOTH_CONNECT
+//                ) == PackageManager.PERMISSION_GRANTED
+//            ) {
+//                name?.setText(bluetooth.host?.device?.name)
+//            }
+            name?.setText(bluetooth.host?.device?.name)
             bluetooth.host?.let { elapsed?.setBase(it.connectedSince) }
             elapsed?.setFormat(resources.getString(R.string.connect_connected_elapsed))
             elapsed?.start()
             disconnect?.setOnClickListener(View.OnClickListener { v: View? -> bluetooth.host?.disconnect() })
+            mouse?.setOnClickListener(View.OnClickListener { v: View? ->
+                (activity as MainActivity?)!!.navigate(
+                    R.id.drawer_mouse
+                )
+            })
         }
     }
 

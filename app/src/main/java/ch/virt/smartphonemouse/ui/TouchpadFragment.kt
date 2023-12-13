@@ -20,6 +20,8 @@ class TouchpadFragment:Fragment(R.layout.fragment_touchpad) {
 
     private var root: RelativeLayout? = null
     private var visuals = false
+    private var theme = true // false = light, true = dark
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -27,6 +29,8 @@ class TouchpadFragment:Fragment(R.layout.fragment_touchpad) {
     ): View? {
 
         // Set system view visibility
+        requireActivity().window.statusBarColor =
+            resources.getColor(if (theme) R.color.mouse_background_dark else R.color.mouse_background_light)
         requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (!visuals) requireActivity().window.insetsController!!.hide(WindowInsets.Type.statusBars())
@@ -56,8 +60,10 @@ class TouchpadFragment:Fragment(R.layout.fragment_touchpad) {
         }
         super.onDestroyView()
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         root = view.findViewById(R.id.touchpad_root)
+        root?.setBackgroundResource(if (theme) R.color.mouse_background_dark else R.color.mouse_background_light)
     }
 }

@@ -235,14 +235,15 @@ class BluetoothHandler(private val main: ComponentActivity) : ServiceListener {
      * @return whether it is bonded
      */
     fun isBonded(address: String?): Boolean {
-        if (androidx.core.app.ActivityCompat.checkSelfPermission( main,
-                android.Manifest.permission.BLUETOOTH_CONNECT
-            ) == android.content.pm.PackageManager.PERMISSION_GRANTED
-        ) {
-            for (device in adapter!!.bondedDevices) {
-                if (device.address == address) return true
-            }
-            return false
+//        if (androidx.core.app.ActivityCompat.checkSelfPermission( main,
+//                android.Manifest.permission.BLUETOOTH_CONNECT
+//            ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+//        ) {
+//
+//        }
+//        return false
+        for (device in adapter!!.bondedDevices) {
+            if (device.address == address) return true
         }
         return false
     }
