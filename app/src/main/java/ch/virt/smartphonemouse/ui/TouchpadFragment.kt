@@ -18,7 +18,6 @@ import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
 import ch.virt.smartphonemouse.R
 import ch.virt.smartphonemouse.mouse.MouseInputs
-import ch.virt.smartphonemouse.mouse.MovementHandler
 import ch.virt.smartphonemouse.ui.mouse.MouseUsageDialog
 
 /**
@@ -35,34 +34,25 @@ class TouchpadFragment
     private var width = 0
     private var height = 0
     private var theme = false // false = light, true = dark
+    private var xDown = 0f
+    private var yDown = 0f
 
     // Feedback
     private var visuals = false
-    private var buttonsStrokeWeight = 0
     private var viewIntensity = 0f
     private var vibrations = false
     private var buttonIntensity = 0
     private var buttonLength = 0
-    private var scrollIntensity = 0
-    private var scrollLength = 0
-    private var specialIntensity = 0
-    private var specialLength = 0
     private var leftView: View? = null
     private var rightView: View? = null
     private var middleView: View? = null
     private var vibrator: Vibrator? = null
 
-    var left = false
-    var right = false
-    var middle = false
+    private var left = false
+    private var right = false
 
-    // Middle Specific
-    private var middleClickWait = 0
-    private var scrollThreshold = 0
-    private var middleStart = 0
-    private var middleStartTime: Long = 0
-    private var middleDecided = false
-    private var middleScrolling = false
+
+
 
     /**
      * Reads the settings for the fragment from the preferences.
@@ -70,18 +60,9 @@ class TouchpadFragment
     private fun readSettings() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         theme = prefs.getString("interfaceTheme", "dark") == "dark"
-        scrollThreshold = prefs.getInt("interfaceBehaviourScrollStep", 50)
-        middleClickWait = prefs.getInt("interfaceBehaviourSpecialWait", 300)
         visuals = prefs.getBoolean("interfaceVisualsEnable", true)
-        buttonsStrokeWeight = prefs.getInt("interfaceVisualsStrokeWeight", 4)
         viewIntensity = prefs.getFloat("interfaceVisualsIntensity", 0.5f)
         vibrations = prefs.getBoolean("interfaceVibrationsEnable", true)
-        buttonIntensity = prefs.getInt("interfaceVibrationsButtonIntensity", 100)
-        buttonLength = prefs.getInt("interfaceVibrationsButtonLength", 30)
-        scrollIntensity = prefs.getInt("interfaceVibrationsScrollIntensity", 50)
-        scrollLength = prefs.getInt("interfaceVibrationsScrollLength", 20)
-        specialIntensity = prefs.getInt("interfaceVibrationsSpecialIntensity", 100)
-        specialLength = prefs.getInt("interfaceVibrationsSpecialLength", 50)
 
     }
 
@@ -192,7 +173,6 @@ class TouchpadFragment
         // Temporary Variables
         var left = false
         var right = false
-        var middle = false
 
         // Check whether a pointer is on a button, and if, check whether it is currently releasing or not
         for (i in 0 until event.pointerCount) {
@@ -205,8 +185,13 @@ class TouchpadFragment
                     height/2
                 )
             ) { // Left Mouse Button
-                if (event.actionIndex == i && event.actionMasked != MotionEvent.ACTION_POINTER_UP && event.actionMasked != MotionEvent.ACTION_UP || event.actionIndex != i) left =
-                    true
+                if (event.actionIndex == i && event.actionMasked != MotionEvent.ACTION_MOVE && event.actionMasked != MotionEvent.ACTION_POINTER_UP && event.actionMasked != MotionEvent.ACTION_UP || event.actionIndex != i) {
+                    left = true
+                    xDown = event.x
+                    yDown = event.y
+
+                }
+
             }
             if (within(
                     event.getX(i),
@@ -217,8 +202,33 @@ class TouchpadFragment
                     height/2
                 )
             ) { // Right Mouse Button
-                if (event.actionIndex == i && event.actionMasked != MotionEvent.ACTION_POINTER_UP && event.actionMasked != MotionEvent.ACTION_UP || event.actionIndex != i) right =
-                    true
+                if (event.actionIndex == i && event.actionMasked != MotionEvent.ACTION_MOVE && event.actionMasked != MotionEvent.ACTION_POINTER_UP && event.actionMasked != MotionEvent.ACTION_UP || event.actionIndex != i) {
+                    right = true
+                    xDown = event.x
+                    yDown = event.y
+                }
+            }
+            if (within(
+                    event.getX(i),
+                    event.getY(i),
+                    0,
+                    0,
+                    width,
+                    height
+                )
+            ){ // single drag
+                if (event.actionIndex == i && event.actionMasked == MotionEvent.ACTION_MOVE || event.actionIndex != i) {
+                    left = this.left
+                    right = this.right
+                    var distX = event.x - xDown
+                    var distY = event.y - yDown
+                    mouse!!.changeXPosition(distX)
+                    mouse!!.changeYPosition(distY)
+                    xDown = event.x
+                    yDown = event.y
+                    
+
+                }
             }
         }
 
@@ -231,22 +241,13 @@ class TouchpadFragment
             vibrate(buttonLength, buttonIntensity)
             setVisibility(rightView, right)
         }
-        if (this.middle != middle) {
-            if (!middle) setVisibility(middleView, false)
-            if (!middle && middleDecided && !middleScrolling) vibrate(buttonLength, buttonIntensity)
-        }
 
-        // Send Data
-        if (this.middle != middle && !middle && middleDecided && !middleScrolling) mouse!!.setMiddleButton(
-            false
-        )
         if (this.left != left) mouse!!.setLeftButton(left)
         if (this.right != right) mouse!!.setRightButton(right)
 
         // Update self
         this.left = left
         this.right = right
-        this.middle = middle
         return true
     }
 
