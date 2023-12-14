@@ -12,7 +12,7 @@ import ch.virt.smartphonemouse.ui.settings.custom.SeekIntegerPreference
  * This fragment is the settings page, where the user can configure things regarding the interface.
  */
 class SettingsInterfaceSubfragment : PreferenceFragmentCompat() {
-    override fun onCreatePreferences(savedInstanceState: Bundle, rootKey: String) {
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_interface, null)
         val interfaceLayoutMiddleWidth =
             findPreference<SeekFloatPreference>("interfaceLayoutMiddleWidth")
@@ -54,7 +54,7 @@ class SettingsInterfaceSubfragment : PreferenceFragmentCompat() {
 
     fun checkAdvanced() {
         val advanced =
-            PreferenceManager.getDefaultSharedPreferences(context).getBoolean("advanced", false)
+            PreferenceManager.getDefaultSharedPreferences(requireContext()).getBoolean("advanced", false)
         findPreference<Preference>("interfaceBehaviour")!!.isVisible = advanced
         findPreference<Preference>("interfaceVisualsStrokeWeight")!!.isVisible = advanced
         findPreference<Preference>("interfaceVisualsIntensity")!!.isVisible =

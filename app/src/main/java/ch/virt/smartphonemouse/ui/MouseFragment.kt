@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.os.VibratorManager
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -83,8 +84,8 @@ class MouseFragment
      * Reads the settings for the fragment from the preferences.
      */
     private fun readSettings() {
-        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        theme = prefs.getString("interfaceTheme", "dark") == "dark"
+        val prefs = context?.let { PreferenceManager.getDefaultSharedPreferences(it) }
+        theme = prefs!!.getString("interfaceTheme", "dark") == "dark"
         scrollThreshold = prefs.getInt("interfaceBehaviourScrollStep", 50)
         middleClickWait = prefs.getInt("interfaceBehaviourSpecialWait", 300)
         visuals = prefs.getBoolean("interfaceVisualsEnable", true)
@@ -151,7 +152,7 @@ class MouseFragment
     /**
      * Initializes the fragment.
      */
-    @SuppressLint("ClickableViewAccessibility")
+    @SuppressLint("ClickableViewAccessibility", "ServiceCast")
     private fun init() {
         root!!.post {
             // Wait for root view to get its size
@@ -160,7 +161,7 @@ class MouseFragment
         }
         root!!.setOnTouchListener { v: View?, event: MotionEvent -> viewTouched(event) }
         if (vibrations) vibrator = requireContext().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("showUsage", true)) {
+        if (context?.let { PreferenceManager.getDefaultSharedPreferences(it).getBoolean("showUsage", true) } == true) {
             movement!!.unregister()
             mouse!!.stop()
             val dialog = MouseUsageDialog(object : MouseUsageDialog.UsageFinishedListener {
@@ -333,14 +334,14 @@ class MouseFragment
         // Update Feedback
         if (this.left != left) {
             vibrate(buttonLength, buttonIntensity)
-            setVisibility(leftView, left)
+//            setVisibility(leftView, left)
         }
         if (this.right != right) {
             vibrate(buttonLength, buttonIntensity)
-            setVisibility(rightView, right)
+//            setVisibility(rightView, right)
         }
         if (this.middle != middle) {
-            if (!middle) setVisibility(middleView, false)
+//            if (!middle) setVisibility(middleView, false)
             if (!middle && middleDecided && !middleScrolling) vibrate(buttonLength, buttonIntensity)
         }
 

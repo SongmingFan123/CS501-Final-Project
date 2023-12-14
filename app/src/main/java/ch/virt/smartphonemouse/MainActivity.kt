@@ -249,13 +249,21 @@ class MainActivity : AppCompatActivity(),
         pref: Preference
     ): Boolean {
         val args = pref.extras
-        val fragment = supportFragmentManager.fragmentFactory.instantiate(
-            classLoader,
-            pref.fragment
-        )
-        fragment.arguments = args
-        fragment.setTargetFragment(caller, 0)
-        switchFragment(fragment, true)
+        val fragment = pref.fragment?.let {
+            supportFragmentManager.fragmentFactory.instantiate(
+                classLoader,
+                it
+            )
+        }
+        if (fragment != null) {
+            fragment.arguments = args
+        }
+        if (fragment != null) {
+            fragment.setTargetFragment(caller, 0)
+        }
+        if (fragment != null) {
+            switchFragment(fragment, true)
+        }
         return true
     }
 

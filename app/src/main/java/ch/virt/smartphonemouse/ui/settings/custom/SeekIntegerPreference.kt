@@ -13,7 +13,7 @@ class SeekIntegerPreference @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.seekBarPreferenceStyle,
     defStyleRes: Int = 0
-) : SeekBarPreference(context, attrs, defStyleAttr, defStyleRes) {
+) : SeekBarPreference(context!!, attrs, defStyleAttr, defStyleRes) {
     /**
      * Returns the maximum value of the preference.
      *

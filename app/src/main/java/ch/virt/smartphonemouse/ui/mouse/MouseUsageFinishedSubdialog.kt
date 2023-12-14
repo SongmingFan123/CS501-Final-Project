@@ -22,12 +22,12 @@ class MouseUsageFinishedSubdialog
         notAgain = view.findViewById(R.id.mouse_usage_finished_notagain)
         notAgain?.setChecked(
             !PreferenceManager.getDefaultSharedPreferences(
-                context
+                requireContext()
             ).getBoolean("showUsage", true)
         )
         notAgain?.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView: CompoundButton?, isChecked: Boolean ->
             PreferenceManager.getDefaultSharedPreferences(
-                context
+                requireContext()
             ).edit().putBoolean("showUsage", !isChecked).apply()
         })
     }

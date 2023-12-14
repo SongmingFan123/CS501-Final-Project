@@ -61,7 +61,7 @@ class SlidesControllerFragment: Fragment(R.layout.fragment_slides_controller) {
      * Reads the settings for the fragment from the preferences.
      */
     private fun readSettings() {
-        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context!!)
         theme = prefs.getString("interfaceTheme", "dark") == "dark"
         scrollThreshold = prefs.getInt("interfaceBehaviourScrollStep", 50)
         middleClickWait = prefs.getInt("interfaceBehaviourSpecialWait", 300)

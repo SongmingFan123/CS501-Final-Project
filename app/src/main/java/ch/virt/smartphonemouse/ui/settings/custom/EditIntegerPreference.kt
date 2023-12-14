@@ -144,15 +144,15 @@ class EditIntegerPreference @JvmOverloads constructor(
     }
 
     override fun getSummary(): CharSequence {
-        return if (isShowValueAsDescription) "$value $valueUnit" else super.getSummary()
+        return if (isShowValueAsDescription) "$value $valueUnit" else super.getSummary()!!
     }
 
     override fun getText(): String {
         return Integer.toString(getValue())
     }
 
-    override fun setText(text: String) {
-        setValue(text.toInt())
+    override fun setText(text: String?) {
+        setValue(text!!.toInt())
     }
 
     override fun shouldDisableDependents(): Boolean {

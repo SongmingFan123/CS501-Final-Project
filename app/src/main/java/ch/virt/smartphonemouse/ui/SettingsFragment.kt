@@ -25,7 +25,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 true
             }
         checkAdvanced(
-            PreferenceManager.getDefaultSharedPreferences(context).getBoolean("advanced", false)
+            PreferenceManager.getDefaultSharedPreferences(context!!).getBoolean("advanced", false)
         )
         findPreference<Preference>("advanced")!!.onPreferenceChangeListener =
             Preference.OnPreferenceChangeListener { preference: Preference?, newValue: Any ->
@@ -48,7 +48,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             .setPositiveButton(R.string.settings_reset_dialog_reset) { dialog: DialogInterface?, id: Int ->
                 DefaultSettings.set(
                     PreferenceManager.getDefaultSharedPreferences(
-                        context
+                        context!!
                     )
                 )
                 Snackbar.make(
@@ -56,7 +56,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     resources.getString(R.string.settings_reset_confirmation),
                     Snackbar.LENGTH_SHORT
                 ).show()
-                val advanced = PreferenceManager.getDefaultSharedPreferences(context)
+                val advanced = PreferenceManager.getDefaultSharedPreferences(context!!)
                     .getBoolean("advanced", false)
                 checkAdvanced(advanced)
                 (findPreference<Preference>("advanced") as SwitchPreference?)!!.isChecked = advanced

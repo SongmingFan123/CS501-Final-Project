@@ -37,7 +37,7 @@ class CalibrationHandler(private val context: Context?) : SensorEventListener {
         calibration = Calibration(
             stl, Parameters(
                 PreferenceManager.getDefaultSharedPreferences(
-                    context
+                    context!!
                 )
             )
         )

@@ -14,7 +14,7 @@ import ch.virt.smartphonemouse.ui.settings.dialog.CalibrateDialog
  * This fragment is the settings page, where the user can configure everything regarding the movement.
  */
 class SettingsMovementSubfragment : PreferenceFragmentCompat() {
-    override fun onCreatePreferences(savedInstanceState: Bundle, rootKey: String) {
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_movement, null)
         val movementSensitivity = findPreference<SeekFloatPreference>("movementSensitivity")
         movementSensitivity?.maximum = (20000f)
@@ -42,7 +42,7 @@ class SettingsMovementSubfragment : PreferenceFragmentCompat() {
 
     fun checkAdvanced() {
         val advanced =
-            PreferenceManager.getDefaultSharedPreferences(context).getBoolean("advanced", false)
+            PreferenceManager.getDefaultSharedPreferences(requireContext()).getBoolean("advanced", false)
         findPreference<Preference>("movementEnableGravityRotation")!!.isVisible = advanced
         findPreference<Preference>("movementCalibrationSampling")!!.isVisible =
             advanced

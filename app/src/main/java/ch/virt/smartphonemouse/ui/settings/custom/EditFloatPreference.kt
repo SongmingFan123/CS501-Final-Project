@@ -134,15 +134,15 @@ class EditFloatPreference @JvmOverloads constructor(
     }
 
     override fun getSummary(): CharSequence {
-        return if (showValueAsDescription) "$value $valueUnit" else super.getSummary()
+        return if (showValueAsDescription) "$value $valueUnit" else super.getSummary()!!
     }
 
     override fun getText(): String {
         return java.lang.Float.toString(getValue())
     }
 
-    override fun setText(text: String) {
-        setValue(text.toFloat())
+    override fun setText(text: String?) {
+        setValue(text!!.toFloat())
     }
 
     override fun shouldDisableDependents(): Boolean {

@@ -15,7 +15,7 @@ import com.google.android.material.snackbar.Snackbar
  * This fragment shows the settings that are used to configure the settings regarding communication.
  */
 class SettingsCommunicationSubfragment : PreferenceFragmentCompat() {
-    override fun onCreatePreferences(savedInstanceState: Bundle, rootKey: String) {
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings_communication, null)
         val communicationRemoveDevices = findPreference<Preference>("communicationRemoveDevices")
         communicationRemoveDevices!!.onPreferenceClickListener =
@@ -33,7 +33,7 @@ class SettingsCommunicationSubfragment : PreferenceFragmentCompat() {
         builder.setMessage(R.string.settings_communication_removeall_dialog_message)
             .setPositiveButton(R.string.settings_communication_removeall_dialog_remove) { dialog: DialogInterface?, id: Int ->
                 val editor = PreferenceManager.getDefaultSharedPreferences(
-                    context
+                    requireContext()
                 ).edit()
                 editor.putString(
                     DeviceStorage.Companion.DEVICES_KEY,
@@ -41,7 +41,7 @@ class SettingsCommunicationSubfragment : PreferenceFragmentCompat() {
                 ) // Reset to an empty json array
                 editor.apply()
                 Snackbar.make(
-                    view!!,
+                    requireView(),
                     resources.getString(R.string.settings_communication_removeall_confirmation),
                     Snackbar.LENGTH_SHORT
                 ).show()
