@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -44,6 +45,7 @@ class TouchpadFragment
     private var isDownJ = false
     private var isMoving = false
     private val LONG_HOLD_TIME_BOUND = 500
+    private val TAG = "Touchpad fragment"
 
 
     // Feedback
@@ -182,6 +184,8 @@ class TouchpadFragment
                         downTimeI = 0
                     }else{
                         mouse!!.setLeftButton(true)
+                        Log.d(TAG, System.currentTimeMillis().toInt().toString())
+                        Log.d(TAG, downTimeI.toString())
                         vibrate(buttonLength, buttonIntensity)
                     }
                 }
@@ -192,14 +196,19 @@ class TouchpadFragment
             }
             if(event.actionMasked ==  MotionEvent.ACTION_UP || event.actionMasked == MotionEvent.ACTION_POINTER_UP){
                 if(System.currentTimeMillis().toInt() - downTimeI <= LONG_HOLD_TIME_BOUND){
+                    Log.d(TAG, System.currentTimeMillis().toInt().toString())
+                    Log.d(TAG, downTimeI.toString())
                     mouse!!.setLeftButton(true)
-                    vibrate(buttonLength, buttonIntensity)
                     mouse!!.setLeftButton(false)
+                    vibrate(buttonLength, buttonIntensity)
                 }
                 if(!isMoving){
                     mouse!!.setLeftButton(false)
                 }
             }
+        }
+        if(event.pointerCount == 2){
+
         }
 
 //        // Check whether a pointer is on a button, and if, check whether it is currently releasing or not
