@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -79,7 +80,7 @@ class MouseFragment
     private var middleStartTime: Long = 0
     private var middleDecided = false
     private var middleScrolling = false
-
+    private val TAG = "MouseFragment"
     /**
      * Reads the settings for the fragment from the preferences.
      */
@@ -261,6 +262,12 @@ class MouseFragment
         var left = false
         var right = false
         var middle = false
+        if(event.actionMasked != MotionEvent.ACTION_POINTER_UP && event.actionMasked != MotionEvent.ACTION_UP){
+            left = this.left
+            right = this.right
+            middle = this.middle
+        }
+
 
         // Check whether a pointer is on a button, and if, check whether it is currently releasing or not
         for (i in 0 until event.pointerCount) {
@@ -273,8 +280,9 @@ class MouseFragment
                     leftHeight
                 )
             ) { // Left Mouse Button
-                if (event.actionIndex == i && event.actionMasked != MotionEvent.ACTION_POINTER_UP && event.actionMasked != MotionEvent.ACTION_UP || event.actionIndex != i) left =
-                    true
+                if (event.actionIndex == i && event.actionMasked != MotionEvent.ACTION_POINTER_UP && event.actionMasked != MotionEvent.ACTION_UP || event.actionIndex != i)
+                    if(!right && !middle)
+                        left = true
             }
             if (within(
                     event.getX(i),
@@ -285,8 +293,9 @@ class MouseFragment
                     rightHeight
                 )
             ) { // Right Mouse Button
-                if (event.actionIndex == i && event.actionMasked != MotionEvent.ACTION_POINTER_UP && event.actionMasked != MotionEvent.ACTION_UP || event.actionIndex != i) right =
-                    true
+                if (event.actionIndex == i && event.actionMasked != MotionEvent.ACTION_POINTER_UP && event.actionMasked != MotionEvent.ACTION_UP || event.actionIndex != i)
+                    if(!left && !middle)
+                        right = true
             }
             if (within(
                     event.getX(i),
@@ -297,8 +306,9 @@ class MouseFragment
                     middleHeight
                 )
             ) { // Middle Mouse Button
-                if (event.actionIndex == i && event.actionMasked != MotionEvent.ACTION_POINTER_UP && event.actionMasked != MotionEvent.ACTION_UP || event.actionIndex != i) middle =
-                    true
+                if (event.actionIndex == i && event.actionMasked != MotionEvent.ACTION_POINTER_UP && event.actionMasked != MotionEvent.ACTION_UP || event.actionIndex != i)
+                    if(!left && !right)
+                        middle = true
                 if (!this.middle && middle) {
                     middleStart = event.getY(i).toInt()
                     middleStartTime = System.currentTimeMillis()
@@ -352,6 +362,7 @@ class MouseFragment
         if (this.left != left) mouse!!.setLeftButton(left)
         if (this.right != right) mouse!!.setRightButton(right)
 
+        Log.d(TAG, "Mouse status: " + left + " " + right + " " + middle)
         // Update self
         this.left = left
         this.right = right
