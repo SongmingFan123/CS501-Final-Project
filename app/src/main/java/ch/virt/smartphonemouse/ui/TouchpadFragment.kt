@@ -58,8 +58,8 @@ class TouchpadFragment
      * Reads the settings for the fragment from the preferences.
      */
     private fun readSettings() {
-        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-        theme = prefs.getString("interfaceTheme", "dark") == "dark"
+        val prefs = context?.let { PreferenceManager.getDefaultSharedPreferences(it) }
+        theme = prefs!!.getString("interfaceTheme", "dark") == "dark"
         visuals = prefs.getBoolean("interfaceVisualsEnable", true)
         viewIntensity = prefs.getFloat("interfaceVisualsIntensity", 0.5f)
         vibrations = prefs.getBoolean("interfaceVibrationsEnable", true)
@@ -124,7 +124,7 @@ class TouchpadFragment
         }
         root!!.setOnTouchListener { v: View?, event: MotionEvent -> viewTouched(event) }
         if (vibrations) vibrator = requireContext().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("showUsage", true)) {
+        if (context?.let { PreferenceManager.getDefaultSharedPreferences(it).getBoolean("showUsage", true) } == true) {
             mouse!!.stop()
             val dialog = MouseUsageDialog(object : MouseUsageDialog.UsageFinishedListener {
                 override fun finished() {
@@ -226,7 +226,7 @@ class TouchpadFragment
                     mouse!!.changeYPosition(distY)
                     xDown = event.x
                     yDown = event.y
-                    
+
 
                 }
             }
