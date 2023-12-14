@@ -11,7 +11,9 @@ import android.view.ViewGroup
 import android.view.WindowInsets
 import android.view.WindowManager
 import android.widget.FrameLayout
+import android.widget.ImageButton
 import android.widget.RelativeLayout
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
 import ch.virt.smartphonemouse.R
@@ -56,6 +58,8 @@ class SlidesControllerFragment: Fragment(R.layout.fragment_slides_controller) {
     private var middleClickWait = 0
     private var scrollThreshold = 0
 
+    private var previousButton : ImageButton? = null
+    private var nextButton : ImageButton? = null
 
     /**
      * Reads the settings for the fragment from the preferences.
@@ -78,7 +82,45 @@ class SlidesControllerFragment: Fragment(R.layout.fragment_slides_controller) {
         buttonsHeight = prefs.getFloat("interfaceLayoutHeight", 1.0f)
         buttonsMiddleWidth = prefs.getFloat("interfaceLayoutMiddleWidth", 0.2f)
     }
+    //
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val rootView = inflater.inflate(R.layout.fragment_slides_controller, container, false)
 
+        readSettings()
+        requireActivity().window.statusBarColor =
+            resources.getColor(if (theme) R.color.mouse_background_dark else R.color.mouse_background_light)
+        requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (!visuals) requireActivity().window.insetsController!!.hide(WindowInsets.Type.statusBars())
+            requireActivity().window.insetsController!!.hide(WindowInsets.Type.mandatorySystemGestures())
+            requireActivity().window.insetsController!!.hide(WindowInsets.Type.systemGestures())
+            requireActivity().window.insetsController!!.hide(WindowInsets.Type.navigationBars())
+        } else {
+            if (!visuals) requireActivity().window.decorView.systemUiVisibility =
+                View.SYSTEM_UI_FLAG_FULLSCREEN
+        }
+
+        // Find views within the inflated layout
+        root = rootView.findViewById(R.id.slides_controller_root)
+        previousButton = rootView.findViewById(R.id.previous_button)
+        nextButton = rootView.findViewById(R.id.next_button)
+
+        previousButton?.setOnClickListener {
+            Toast.makeText(requireContext(), "previous", Toast.LENGTH_SHORT).show()
+        }
+
+        nextButton?.setOnClickListener {
+            Toast.makeText(requireContext(), "next", Toast.LENGTH_SHORT).show()
+        }
+
+        return rootView
+    }
+
+    /*
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -99,9 +141,18 @@ class SlidesControllerFragment: Fragment(R.layout.fragment_slides_controller) {
             if (!visuals) requireActivity().window.decorView.systemUiVisibility =
                 View.SYSTEM_UI_FLAG_FULLSCREEN
         }
+        root = super.onCreateView(inflater, container, savedInstanceState)?.findViewById(R.id.slides_controller_root)//
+        previousButton = root?.findViewById(R.id.previous_button)
+        nextButton = root?.findViewById(R.id.next_button)
+        previousButton?.setOnClickListener{
+            Toast.makeText( requireContext(), previousButton.toString(),Toast.LENGTH_SHORT).show()
+        }
+        nextButton?.setOnClickListener{
+            Toast.makeText( requireContext(), "next",Toast.LENGTH_SHORT).show()
+        }
         return super.onCreateView(inflater, container, savedInstanceState)
     }
-
+*/
     override fun onDestroyView() {
 
         // Unset system view visibility
