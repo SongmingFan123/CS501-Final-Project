@@ -36,6 +36,11 @@ class TouchpadFragment
     private var theme = false // false = light, true = dark
     private var xDown = 0f
     private var yDown = 0f
+    private var downTime = 0
+    private var isDown = false
+    private val SINGLE_CLICK_TIME = 125
+    private val LONG_HOLD_TIME = 500
+
 
     // Feedback
     private var visuals = false
@@ -45,7 +50,6 @@ class TouchpadFragment
     private var buttonLength = 0
     private var leftView: View? = null
     private var rightView: View? = null
-    private var middleView: View? = null
     private var vibrator: Vibrator? = null
 
     private var left = false
@@ -61,6 +65,8 @@ class TouchpadFragment
         val prefs = context?.let { PreferenceManager.getDefaultSharedPreferences(it) }
         theme = prefs!!.getString("interfaceTheme", "dark") == "dark"
         visuals = prefs.getBoolean("interfaceVisualsEnable", true)
+        buttonIntensity = prefs.getInt("interfaceVibrationsButtonIntensity", 100)
+        buttonLength = prefs.getInt("interfaceVibrationsButtonLength", 30)
         viewIntensity = prefs.getFloat("interfaceVisualsIntensity", 0.5f)
         vibrations = prefs.getBoolean("interfaceVibrationsEnable", true)
 
@@ -158,7 +164,6 @@ class TouchpadFragment
         rightView!!.x = 0F
         rightView!!.y = (height/2).toFloat()
         root!!.addView(rightView)
-        root!!.addView(middleView)
         leftView!!.visibility = View.INVISIBLE
         rightView!!.visibility = View.INVISIBLE
     }
@@ -187,6 +192,7 @@ class TouchpadFragment
             ) { // Left Mouse Button
                 if (event.actionIndex == i && event.actionMasked != MotionEvent.ACTION_MOVE && event.actionMasked != MotionEvent.ACTION_POINTER_UP && event.actionMasked != MotionEvent.ACTION_UP || event.actionIndex != i) {
                     left = true
+                    downTime = System.currentTimeMillis().toInt()
                     xDown = event.x
                     yDown = event.y
 
@@ -204,6 +210,7 @@ class TouchpadFragment
             ) { // Right Mouse Button
                 if (event.actionIndex == i && event.actionMasked != MotionEvent.ACTION_MOVE && event.actionMasked != MotionEvent.ACTION_POINTER_UP && event.actionMasked != MotionEvent.ACTION_UP || event.actionIndex != i) {
                     right = true
+                    downTime = System.currentTimeMillis().toInt()
                     xDown = event.x
                     yDown = event.y
                 }
@@ -222,8 +229,8 @@ class TouchpadFragment
                     right = this.right
                     var distX = event.x - xDown
                     var distY = event.y - yDown
-                    mouse!!.changeXPosition(distX)
-                    mouse!!.changeYPosition(distY)
+                    mouse!!.changeXPosition(distY)
+                    mouse!!.changeYPosition(-distX)
                     xDown = event.x
                     yDown = event.y
 
