@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -79,7 +80,7 @@ class MouseFragment
     private var middleStartTime: Long = 0
     private var middleDecided = false
     private var middleScrolling = false
-
+    private val TAG = "MouseFragment"
     /**
      * Reads the settings for the fragment from the preferences.
      */
@@ -352,6 +353,7 @@ class MouseFragment
         if (this.left != left) mouse!!.setLeftButton(left)
         if (this.right != right) mouse!!.setRightButton(right)
 
+        Log.d(TAG, "Mouse status: " + left + " " + right + " " + middle)
         // Update self
         this.left = left
         this.right = right
