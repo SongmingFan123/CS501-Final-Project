@@ -34,12 +34,16 @@ class TouchpadFragment
     private var width = 0
     private var height = 0
     private var theme = false // false = light, true = dark
-    private var xDown = 0f
-    private var yDown = 0f
-    private var downTime = 0
-    private var isDown = false
-    private val SINGLE_CLICK_TIME = 125
-    private val LONG_HOLD_TIME = 500
+    private var xDownI = 0f
+    private var yDownI = 0f
+    private var xDownJ = 0f
+    private var yDownJ = 0f
+    private var downTimeI = 0
+    private var downTimeJ = 0
+    private var isDownI = false
+    private var isDownJ = false
+    private var isMoving = false
+    private val LONG_HOLD_TIME_BOUND = 500
 
 
     // Feedback
@@ -48,8 +52,7 @@ class TouchpadFragment
     private var vibrations = false
     private var buttonIntensity = 0
     private var buttonLength = 0
-    private var leftView: View? = null
-    private var rightView: View? = null
+    private var touchpadView: View? = null
     private var vibrator: Vibrator? = null
 
     private var left = false
@@ -148,24 +151,14 @@ class TouchpadFragment
     private fun createVisuals() {
         width = root!!.width
         height = root!!.height
-        leftView = View(context)
-        leftView!!.setBackgroundResource(if (theme) R.color.mouse_pressed_dark else R.color.mouse_pressed_light)
-        leftView!!.alpha = viewIntensity
-        leftView!!.layoutParams =
-            FrameLayout.LayoutParams(width, height/2)
-        leftView!!.x = 0F
-        leftView!!.y = 0F
-        root!!.addView(leftView)
-        rightView = View(context)
-        rightView!!.setBackgroundResource(if (theme) R.color.mouse_pressed_dark else R.color.mouse_pressed_light)
-        rightView!!.alpha = viewIntensity
-        rightView!!.layoutParams =
-            FrameLayout.LayoutParams(width, height/2)
-        rightView!!.x = 0F
-        rightView!!.y = (height/2).toFloat()
-        root!!.addView(rightView)
-        leftView!!.visibility = View.INVISIBLE
-        rightView!!.visibility = View.INVISIBLE
+        touchpadView = View(context)
+        touchpadView!!.setBackgroundResource(if (theme) R.color.mouse_pressed_dark else R.color.mouse_pressed_light)
+        touchpadView!!.alpha = viewIntensity
+        touchpadView!!.layoutParams =
+            FrameLayout.LayoutParams(width, height)
+        touchpadView!!.x = 0F
+        touchpadView!!.y = 0F
+        root!!.addView(touchpadView)
     }
 
     /**
@@ -175,86 +168,108 @@ class TouchpadFragment
      * @return whether used
      */
     private fun viewTouched(event: MotionEvent): Boolean {
-        // Temporary Variables
-        var left = false
-        var right = false
-
-        // Check whether a pointer is on a button, and if, check whether it is currently releasing or not
-        for (i in 0 until event.pointerCount) {
-            if (within(
-                    event.getX(i),
-                    event.getY(i),
-                    0,
-                    0,
-                    width,
-                    height/2
-                )
-            ) { // Left Mouse Button
-                if (event.actionIndex == i && event.actionMasked != MotionEvent.ACTION_MOVE && event.actionMasked != MotionEvent.ACTION_POINTER_UP && event.actionMasked != MotionEvent.ACTION_UP || event.actionIndex != i) {
-                    left = true
-                    downTime = System.currentTimeMillis().toInt()
-                    xDown = event.x
-                    yDown = event.y
-
-                }
-
+        if(event.pointerCount == 1){
+            if (event.actionMasked == MotionEvent.ACTION_DOWN || event.actionMasked == MotionEvent.ACTION_POINTER_DOWN) {
+                downTimeI = System.currentTimeMillis().toInt()
+                isDownI = true
+                xDownI = event.x
+                yDownI = event.y
             }
-            if (within(
-                    event.getX(i),
-                    event.getY(i),
-                    0,
-                    height/2,
-                    width,
-                    height/2
-                )
-            ) { // Right Mouse Button
-                if (event.actionIndex == i && event.actionMasked != MotionEvent.ACTION_MOVE && event.actionMasked != MotionEvent.ACTION_POINTER_UP && event.actionMasked != MotionEvent.ACTION_UP || event.actionIndex != i) {
-                    right = true
-                    downTime = System.currentTimeMillis().toInt()
-                    xDown = event.x
-                    yDown = event.y
+            if(event.actionMasked == MotionEvent.ACTION_MOVE){
+                if(!isMoving){
+                    if(System.currentTimeMillis().toInt() - downTimeI <= LONG_HOLD_TIME_BOUND){
+                        isMoving = true
+                        downTimeI = 0
+                    }else{
+                        mouse!!.setLeftButton(true)
+                        vibrate(buttonLength, buttonIntensity)
+                    }
                 }
+                mouse!!.changeXPosition(event.y - yDownI)
+                mouse!!.changeYPosition(-(event.x - xDownI))
+                xDownI = event.x
+                yDownI = event.y
             }
-            if (within(
-                    event.getX(i),
-                    event.getY(i),
-                    0,
-                    0,
-                    width,
-                    height
-                )
-            ){ // single drag
-                if (event.actionIndex == i && event.actionMasked == MotionEvent.ACTION_MOVE || event.actionIndex != i) {
-                    left = this.left
-                    right = this.right
-                    var distX = event.x - xDown
-                    var distY = event.y - yDown
-                    mouse!!.changeXPosition(distY)
-                    mouse!!.changeYPosition(-distX)
-                    xDown = event.x
-                    yDown = event.y
-
-
+            if(event.actionMasked ==  MotionEvent.ACTION_UP || event.actionMasked == MotionEvent.ACTION_POINTER_UP){
+                if(System.currentTimeMillis().toInt() - downTimeI <= LONG_HOLD_TIME_BOUND){
+                    mouse!!.setLeftButton(true)
+                    vibrate(buttonLength, buttonIntensity)
+                    mouse!!.setLeftButton(false)
+                }
+                if(!isMoving){
+                    mouse!!.setLeftButton(false)
                 }
             }
         }
 
-        // Update Feedback
-        if (this.left != left) {
-            vibrate(buttonLength, buttonIntensity)
-            setVisibility(leftView, left)
-        }
-        if (this.right != right) {
-            vibrate(buttonLength, buttonIntensity)
-            setVisibility(rightView, right)
-        }
-
-        if (this.left != left) mouse!!.setLeftButton(left)
-        if (this.right != right) mouse!!.setRightButton(right)
-
-        // Update self
-        this.left = left
-        this.right = right
+//        // Check whether a pointer is on a button, and if, check whether it is currently releasing or not
+//        for (i in 0 until event.pointerCount) {
+//            if (event.actionMasked == MotionEvent.ACTION_DOWN || event.actionMasked == MotionEvent.ACTION_POINTER_DOWN) {
+//                left = true
+//                downTimeI = System.currentTimeMillis().toInt()
+//                xDownI = event.x
+//                yDownI = event.y
+//
+//            }
+//            for(j in 0 until event.pointerCount){
+//                if(i == j)continue
+//
+//            }
+//
+//            if (within(
+//                    event.getX(i),
+//                    event.getY(i),
+//                    0,
+//                    height/2,
+//                    width,
+//                    height/2
+//                )
+//            ) { // Right Mouse Button
+//                if (event.actionIndex == i && event.actionMasked != MotionEvent.ACTION_MOVE && event.actionMasked != MotionEvent.ACTION_POINTER_UP && event.actionMasked != MotionEvent.ACTION_UP || event.actionIndex != i) {
+//                    right = true
+//                    downTimeI = System.currentTimeMillis().toInt()
+//                    xDownI = event.x
+//                    yDownI = event.y
+//                }
+//            }
+//            if (within(
+//                    event.getX(i),
+//                    event.getY(i),
+//                    0,
+//                    0,
+//                    width,
+//                    height
+//                )
+//            ){ // single drag
+//                if (event.actionIndex == i && event.actionMasked == MotionEvent.ACTION_MOVE || event.actionIndex != i) {
+//                    left = this.left
+//                    right = this.right
+//                    var distX = event.x - xDownI
+//                    var distY = event.y - yDownI
+//                    mouse!!.changeXPosition(distY)
+//                    mouse!!.changeYPosition(-distX)
+//                    xDownI = event.x
+//                    yDownI = event.y
+//
+//
+//                }
+//            }
+//        }
+//
+//        // Update Feedback
+//        if (this.left != left) {
+//            vibrate(buttonLength, buttonIntensity)
+//        }
+//        if (this.right != right) {
+//            vibrate(buttonLength, buttonIntensity)
+//        }
+//
+//        if (this.left != left) mouse!!.setLeftButton(left)
+//        if (this.right != right) mouse!!.setRightButton(right)
+//
+//        // Update self
+//        this.left = left
+//        this.right = right
         return true
     }
 
@@ -273,38 +288,5 @@ class TouchpadFragment
         )
     }
 
-    /**
-     * Sets the visibility of a view if the visuals are enabled.
-     *
-     * @param view    view to set visibility for
-     * @param visible whether the view is visible
-     */
-    private fun setVisibility(view: View?, visible: Boolean) {
-        if (!visuals) return
-        if (visible) requireView().visibility = View.VISIBLE else requireView().visibility = View.INVISIBLE
-    }
 
-    companion object {
-        /**
-         * Checks whether certain coordinates are within a boundary.
-         *
-         * @param touchX x coordinate
-         * @param touchY y coordinate
-         * @param x      x coordinate of the boundary
-         * @param y      y coordinate of the boundary
-         * @param width  width of the boundary
-         * @param height height of the boundary
-         * @return whether it is inside
-         */
-        private fun within(
-            touchX: Float,
-            touchY: Float,
-            x: Int,
-            y: Int,
-            width: Int,
-            height: Int
-        ): Boolean {
-            return touchX > x && touchX < x + width && touchY > y && touchY < y + height
-        }
-    }
 }
