@@ -195,7 +195,7 @@ class MainActivity : AppCompatActivity(),
                 }
 
                 R.id.drawer_touchpad -> {
-                    switchFragment(TouchpadFragment(), false)
+                    switchFragment(TouchpadFragment(inputs), false)
                     bar!!.visibility = View.GONE
                 }
                 R.id.drawer_slides_controller -> {
