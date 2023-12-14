@@ -274,8 +274,9 @@ class MouseFragment
                     leftHeight
                 )
             ) { // Left Mouse Button
-                if (event.actionIndex == i && event.actionMasked != MotionEvent.ACTION_POINTER_UP && event.actionMasked != MotionEvent.ACTION_UP || event.actionIndex != i) left =
-                    true
+                if (event.actionIndex == i && event.actionMasked != MotionEvent.ACTION_POINTER_UP && event.actionMasked != MotionEvent.ACTION_UP || event.actionIndex != i)
+                    if(!right && !middle)
+                        left = true
             }
             if (within(
                     event.getX(i),
@@ -286,8 +287,8 @@ class MouseFragment
                     rightHeight
                 )
             ) { // Right Mouse Button
-                if (event.actionIndex == i && event.actionMasked != MotionEvent.ACTION_POINTER_UP && event.actionMasked != MotionEvent.ACTION_UP || event.actionIndex != i) right =
-                    true
+                if (event.actionIndex == i && event.actionMasked != MotionEvent.ACTION_POINTER_UP && event.actionMasked != MotionEvent.ACTION_UP || event.actionIndex != i)
+                    right = true
             }
             if (within(
                     event.getX(i),

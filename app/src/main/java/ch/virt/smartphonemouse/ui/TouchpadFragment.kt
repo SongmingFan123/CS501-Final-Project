@@ -45,7 +45,6 @@ class TouchpadFragment
     private var buttonLength = 0
     private var leftView: View? = null
     private var rightView: View? = null
-    private var middleView: View? = null
     private var vibrator: Vibrator? = null
 
     private var left = false
@@ -63,7 +62,8 @@ class TouchpadFragment
         visuals = prefs.getBoolean("interfaceVisualsEnable", true)
         viewIntensity = prefs.getFloat("interfaceVisualsIntensity", 0.5f)
         vibrations = prefs.getBoolean("interfaceVibrationsEnable", true)
-
+        buttonIntensity = prefs.getInt("interfaceVibrationsButtonIntensity", 100)
+        buttonLength = prefs.getInt("interfaceVibrationsButtonLength", 30)
     }
 
     override fun onCreateView(
@@ -158,7 +158,6 @@ class TouchpadFragment
         rightView!!.x = 0F
         rightView!!.y = (height/2).toFloat()
         root!!.addView(rightView)
-        root!!.addView(middleView)
         leftView!!.visibility = View.INVISIBLE
         rightView!!.visibility = View.INVISIBLE
     }
@@ -222,8 +221,8 @@ class TouchpadFragment
                     right = this.right
                     var distX = event.x - xDown
                     var distY = event.y - yDown
-                    mouse!!.changeXPosition(distX)
-                    mouse!!.changeYPosition(distY)
+                    mouse!!.changeXPosition(distY)
+                    mouse!!.changeYPosition(-distX)
                     xDown = event.x
                     yDown = event.y
 
@@ -235,11 +234,11 @@ class TouchpadFragment
         // Update Feedback
         if (this.left != left) {
             vibrate(buttonLength, buttonIntensity)
-            setVisibility(leftView, left)
+//            setVisibility(leftView, left)
         }
         if (this.right != right) {
             vibrate(buttonLength, buttonIntensity)
-            setVisibility(rightView, right)
+//            setVisibility(rightView, right)
         }
 
         if (this.left != left) mouse!!.setLeftButton(left)
