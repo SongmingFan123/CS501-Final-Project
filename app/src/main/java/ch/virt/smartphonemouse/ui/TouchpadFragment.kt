@@ -20,6 +20,7 @@ import androidx.preference.PreferenceManager
 import ch.virt.smartphonemouse.R
 import ch.virt.smartphonemouse.mouse.MouseInputs
 import ch.virt.smartphonemouse.ui.mouse.MouseUsageDialog
+import java.lang.Math.abs
 
 /**
  * This fragment represents the mouse interface the user uses to input button clicks.
@@ -41,10 +42,14 @@ class TouchpadFragment
     private var yDownJ = 0f
     private var downTimeI = 0
     private var downTimeJ = 0
-    private var isDownI = false
-    private var isDownJ = false
+    private var scrollUpI = false
+    private var scrollUpJ = false
+    private var scrollDownI = false
+    private var scrollDownJ = false
     private var isMoving = false
-    private val LONG_HOLD_TIME_BOUND = 500
+    private var isDragging = false
+    private val LONG_HOLD_TIME_BOUND = 300
+    private var oneUp = false
     private val TAG = "Touchpad fragment"
 
 
@@ -57,8 +62,6 @@ class TouchpadFragment
     private var touchpadView: View? = null
     private var vibrator: Vibrator? = null
 
-    private var left = false
-    private var right = false
 
 
 
@@ -170,23 +173,29 @@ class TouchpadFragment
      * @return whether used
      */
     private fun viewTouched(event: MotionEvent): Boolean {
-        if(event.pointerCount == 1){
-            if (event.actionMasked == MotionEvent.ACTION_DOWN || event.actionMasked == MotionEvent.ACTION_POINTER_DOWN) {
+        if (event.actionMasked == MotionEvent.ACTION_DOWN || event.actionMasked == MotionEvent.ACTION_POINTER_DOWN) {
+            if(event.actionIndex == 0){
                 downTimeI = System.currentTimeMillis().toInt()
-                isDownI = true
                 xDownI = event.x
                 yDownI = event.y
+            }else if(event.actionIndex == 1){
+                downTimeJ = System.currentTimeMillis().toInt()
+                xDownJ = event.x
+                yDownJ = event.y
             }
-            if(event.actionMasked == MotionEvent.ACTION_MOVE){
-                if(!isMoving){
+        }
+
+        if(event.pointerCount == 1) {
+            if(event.actionMasked == MotionEvent.ACTION_MOVE ){
+                if(!isMoving && !isDragging){
                     if(System.currentTimeMillis().toInt() - downTimeI <= LONG_HOLD_TIME_BOUND){
                         isMoving = true
                         downTimeI = 0
                     }else{
+                        isDragging = true
                         mouse!!.setLeftButton(true)
-                        Log.d(TAG, System.currentTimeMillis().toInt().toString())
-                        Log.d(TAG, downTimeI.toString())
                         vibrate(buttonLength, buttonIntensity)
+                        downTimeI = 0
                     }
                 }
                 mouse!!.changeXPosition(event.y - yDownI)
@@ -194,91 +203,69 @@ class TouchpadFragment
                 xDownI = event.x
                 yDownI = event.y
             }
-            if(event.actionMasked ==  MotionEvent.ACTION_UP || event.actionMasked == MotionEvent.ACTION_POINTER_UP){
-                if(System.currentTimeMillis().toInt() - downTimeI <= LONG_HOLD_TIME_BOUND){
-                    Log.d(TAG, System.currentTimeMillis().toInt().toString())
-                    Log.d(TAG, downTimeI.toString())
-                    mouse!!.setLeftButton(true)
-                    mouse!!.setLeftButton(false)
-                    vibrate(buttonLength, buttonIntensity)
+            if (event.actionMasked == MotionEvent.ACTION_UP || event.actionMasked == MotionEvent.ACTION_POINTER_UP) {
+                if (System.currentTimeMillis().toInt() - downTimeI <= LONG_HOLD_TIME_BOUND || System.currentTimeMillis().toInt() - downTimeJ <= LONG_HOLD_TIME_BOUND) {
+                    if(oneUp){
+                        mouse!!.setRightButton(true)
+                        Thread.sleep(200)
+                        mouse!!.setRightButton(false)
+                        vibrate(buttonLength, buttonIntensity)
+                    }else {
+                        mouse!!.setLeftButton(true)
+                        Thread.sleep(200)
+                        mouse!!.setLeftButton(false)
+                        vibrate(buttonLength, buttonIntensity)
+                    }
                 }
-                if(!isMoving){
+                if (isDragging) {
                     mouse!!.setLeftButton(false)
+                }
+                isMoving = false
+                isDragging = false
+                downTimeI = 0
+                oneUp = false
+                return true
+            }
+        }else if(event.pointerCount == 2) {
+            if (event.actionMasked == MotionEvent.ACTION_UP || event.actionMasked == MotionEvent.ACTION_POINTER_UP) {
+                if (System.currentTimeMillis().toInt() - downTimeI <= LONG_HOLD_TIME_BOUND || System.currentTimeMillis().toInt() - downTimeJ <= LONG_HOLD_TIME_BOUND) {
+                    oneUp = true
+                    isMoving = false
+                    isDragging = false
+                    downTimeI = 0
+                }
+            }
+            if(event.actionMasked == MotionEvent.ACTION_MOVE ){
+                if(event.actionIndex == 0){
+                    scrollUpI = (event.x - xDownI) > 30
+                    scrollDownI = (xDownI - event.x) > 30
+                    Log.d(TAG, event.x.toString())
+                    Log.d(TAG, xDownI.toString())
+                    if(scrollUpI || scrollDownI){
+                        xDownI = event.x
+                        yDownI = event.y
+                    }
+                }
+                if(event.actionIndex == 1){
+                    scrollUpJ = (event.x - xDownJ) > 30
+                    scrollDownJ = (xDownJ - event.x) > 30
+//                    Log.d(TAG, scrollUpJ.toString())
+//                    Log.d(TAG, scrollDownJ.toString())
+                    if(scrollUpJ||scrollDownJ){
+                        xDownJ = event.x
+                        yDownJ = event.y
+                    }
+                }
+                if(scrollUpI && !scrollUpJ){
+                    mouse!!.changeWheelPosition(1)
+                    isMoving = true
+                }
+                if(scrollDownI && !scrollDownJ){
+                    mouse!!.changeWheelPosition(-1)
+                    isMoving = true
                 }
             }
         }
-        if(event.pointerCount == 2){
-
-        }
-
-//        // Check whether a pointer is on a button, and if, check whether it is currently releasing or not
-//        for (i in 0 until event.pointerCount) {
-//            if (event.actionMasked == MotionEvent.ACTION_DOWN || event.actionMasked == MotionEvent.ACTION_POINTER_DOWN) {
-//                left = true
-//                downTimeI = System.currentTimeMillis().toInt()
-//                xDownI = event.x
-//                yDownI = event.y
-//
-//            }
-//            for(j in 0 until event.pointerCount){
-//                if(i == j)continue
-//
-//            }
-//
-//            if (within(
-//                    event.getX(i),
-//                    event.getY(i),
-//                    0,
-//                    height/2,
-//                    width,
-//                    height/2
-//                )
-//            ) { // Right Mouse Button
-//                if (event.actionIndex == i && event.actionMasked != MotionEvent.ACTION_MOVE && event.actionMasked != MotionEvent.ACTION_POINTER_UP && event.actionMasked != MotionEvent.ACTION_UP || event.actionIndex != i) {
-//                    right = true
-//                    downTimeI = System.currentTimeMillis().toInt()
-//                    xDownI = event.x
-//                    yDownI = event.y
-//                }
-//            }
-//            if (within(
-//                    event.getX(i),
-//                    event.getY(i),
-//                    0,
-//                    0,
-//                    width,
-//                    height
-//                )
-//            ){ // single drag
-//                if (event.actionIndex == i && event.actionMasked == MotionEvent.ACTION_MOVE || event.actionIndex != i) {
-//                    left = this.left
-//                    right = this.right
-//                    var distX = event.x - xDownI
-//                    var distY = event.y - yDownI
-//                    mouse!!.changeXPosition(distY)
-//                    mouse!!.changeYPosition(-distX)
-//                    xDownI = event.x
-//                    yDownI = event.y
-//
-//
-//                }
-//            }
-//        }
-//
-//        // Update Feedback
-//        if (this.left != left) {
-//            vibrate(buttonLength, buttonIntensity)
-//        }
-//        if (this.right != right) {
-//            vibrate(buttonLength, buttonIntensity)
-//        }
-//
-//        if (this.left != left) mouse!!.setLeftButton(left)
-//        if (this.right != right) mouse!!.setRightButton(right)
-//
-//        // Update self
-//        this.left = left
-//        this.right = right
         return true
     }
 
