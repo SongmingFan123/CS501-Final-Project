@@ -17,8 +17,9 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
 import ch.virt.smartphonemouse.R
+import ch.virt.smartphonemouse.mouse.MouseInputs
 
-class SlidesControllerFragment: Fragment(R.layout.fragment_slides_controller) {
+class SlidesControllerFragment (private val mouse : MouseInputs?): Fragment(R.layout.fragment_slides_controller) {
     private var root: RelativeLayout? = null
     private var width = 0
     private var height = 0
@@ -60,7 +61,6 @@ class SlidesControllerFragment: Fragment(R.layout.fragment_slides_controller) {
 
     private var previousButton : ImageButton? = null
     private var nextButton : ImageButton? = null
-
     /**
      * Reads the settings for the fragment from the preferences.
      */
@@ -111,10 +111,23 @@ class SlidesControllerFragment: Fragment(R.layout.fragment_slides_controller) {
 
         previousButton?.setOnClickListener {
             Toast.makeText(requireContext(), "previous", Toast.LENGTH_SHORT).show()
+                mouse!!.changeWheelPosition(1)
+//                middleStart -= scrollThreshold
+//                middleDecided = true
+//                middleScrolling = true
+//                setVisibility(middleView, true)
+//                vibrate(scrollLength, scrollIntensity)
+
         }
 
         nextButton?.setOnClickListener {
             Toast.makeText(requireContext(), "next", Toast.LENGTH_SHORT).show()
+            mouse!!.changeWheelPosition(-1)
+//            middleStart += scrollThreshold
+//            middleDecided = true
+//            middleScrolling = true
+//            setVisibility(middleView, true)
+//            vibrate(scrollLength, scrollIntensity)
         }
 
         return rootView
@@ -224,7 +237,6 @@ class SlidesControllerFragment: Fragment(R.layout.fragment_slides_controller) {
         horizontal.y = middleHeight.toFloat()
         horizontal.x = 0f
         root!!.addView(horizontal)
-
     }
 
 

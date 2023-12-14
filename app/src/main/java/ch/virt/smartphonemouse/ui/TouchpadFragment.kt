@@ -36,6 +36,11 @@ class TouchpadFragment
     private var theme = false // false = light, true = dark
     private var xDown = 0f
     private var yDown = 0f
+    private var downTime = 0
+    private var isDown = false
+    private val SINGLE_CLICK_TIME = 125
+    private val LONG_HOLD_TIME = 500
+
 
     // Feedback
     private var visuals = false
@@ -60,6 +65,8 @@ class TouchpadFragment
         val prefs = context?.let { PreferenceManager.getDefaultSharedPreferences(it) }
         theme = prefs!!.getString("interfaceTheme", "dark") == "dark"
         visuals = prefs.getBoolean("interfaceVisualsEnable", true)
+        buttonIntensity = prefs.getInt("interfaceVibrationsButtonIntensity", 100)
+        buttonLength = prefs.getInt("interfaceVibrationsButtonLength", 30)
         viewIntensity = prefs.getFloat("interfaceVisualsIntensity", 0.5f)
         vibrations = prefs.getBoolean("interfaceVibrationsEnable", true)
         buttonIntensity = prefs.getInt("interfaceVibrationsButtonIntensity", 100)
@@ -186,6 +193,7 @@ class TouchpadFragment
             ) { // Left Mouse Button
                 if (event.actionIndex == i && event.actionMasked != MotionEvent.ACTION_MOVE && event.actionMasked != MotionEvent.ACTION_POINTER_UP && event.actionMasked != MotionEvent.ACTION_UP || event.actionIndex != i) {
                     left = true
+                    downTime = System.currentTimeMillis().toInt()
                     xDown = event.x
                     yDown = event.y
 
@@ -203,6 +211,7 @@ class TouchpadFragment
             ) { // Right Mouse Button
                 if (event.actionIndex == i && event.actionMasked != MotionEvent.ACTION_MOVE && event.actionMasked != MotionEvent.ACTION_POINTER_UP && event.actionMasked != MotionEvent.ACTION_UP || event.actionIndex != i) {
                     right = true
+                    downTime = System.currentTimeMillis().toInt()
                     xDown = event.x
                     yDown = event.y
                 }
