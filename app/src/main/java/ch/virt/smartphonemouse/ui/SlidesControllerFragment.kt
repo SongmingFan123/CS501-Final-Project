@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
 import android.os.Vibrator
 import android.view.LayoutInflater
 import android.view.View
@@ -53,7 +54,7 @@ class SlidesControllerFragment (private val mouse : MouseInputs?): Fragment(R.la
     private var middleY = 0
     private var middleWidth = 0
     private var middleHeight = 0
-
+    private var scrollDistance = 3
 
     // Middle Specific
     private var middleClickWait = 0
@@ -110,62 +111,20 @@ class SlidesControllerFragment (private val mouse : MouseInputs?): Fragment(R.la
         nextButton = rootView.findViewById(R.id.next_button)
 
         previousButton?.setOnClickListener {
-            Toast.makeText(requireContext(), "previous", Toast.LENGTH_SHORT).show()
-                mouse!!.changeWheelPosition(1)
-//                middleStart -= scrollThreshold
-//                middleDecided = true
-//                middleScrolling = true
-//                setVisibility(middleView, true)
-//                vibrate(scrollLength, scrollIntensity)
-
+//            Toast.makeText(requireContext(), "previous", Toast.LENGTH_SHORT).show()
+            vibrate(buttonLength, buttonIntensity)
+            mouse!!.changeWheelPosition(scrollDistance)
         }
 
         nextButton?.setOnClickListener {
-            Toast.makeText(requireContext(), "next", Toast.LENGTH_SHORT).show()
-            mouse!!.changeWheelPosition(-1)
-//            middleStart += scrollThreshold
-//            middleDecided = true
-//            middleScrolling = true
-//            setVisibility(middleView, true)
-//            vibrate(scrollLength, scrollIntensity)
+//            Toast.makeText(requireContext(), "next", Toast.LENGTH_SHORT).show()
+            vibrate(buttonLength, buttonIntensity)
+            mouse!!.changeWheelPosition(-scrollDistance)
         }
 
         return rootView
     }
 
-    /*
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        readSettings() // Read settings first to determine whether visuals are turned on
-
-        // Set system view visibility
-        requireActivity().window.statusBarColor =
-            resources.getColor(if (theme) R.color.mouse_background_dark else R.color.mouse_background_light)
-        requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (!visuals) requireActivity().window.insetsController!!.hide(WindowInsets.Type.statusBars())
-            requireActivity().window.insetsController!!.hide(WindowInsets.Type.mandatorySystemGestures())
-            requireActivity().window.insetsController!!.hide(WindowInsets.Type.systemGestures())
-            requireActivity().window.insetsController!!.hide(WindowInsets.Type.navigationBars())
-        } else {
-            if (!visuals) requireActivity().window.decorView.systemUiVisibility =
-                View.SYSTEM_UI_FLAG_FULLSCREEN
-        }
-        root = super.onCreateView(inflater, container, savedInstanceState)?.findViewById(R.id.slides_controller_root)//
-        previousButton = root?.findViewById(R.id.previous_button)
-        nextButton = root?.findViewById(R.id.next_button)
-        previousButton?.setOnClickListener{
-            Toast.makeText( requireContext(), previousButton.toString(),Toast.LENGTH_SHORT).show()
-        }
-        nextButton?.setOnClickListener{
-            Toast.makeText( requireContext(), "next",Toast.LENGTH_SHORT).show()
-        }
-        return super.onCreateView(inflater, container, savedInstanceState)
-    }
-*/
     override fun onDestroyView() {
 
         // Unset system view visibility
@@ -224,6 +183,15 @@ class SlidesControllerFragment (private val mouse : MouseInputs?): Fragment(R.la
         middleY = 0
         middleHeight = buttonHeight
         middleWidth = width - buttonWidth * 2
+    }
+
+    private fun vibrate(length: Int, intensity: Int) {
+        if (vibrations) vibrator!!.vibrate(
+            VibrationEffect.createOneShot(
+                length.toLong(),
+                intensity
+            )
+        )
     }
 
     /**

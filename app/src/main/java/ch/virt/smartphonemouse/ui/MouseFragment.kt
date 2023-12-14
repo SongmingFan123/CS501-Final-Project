@@ -262,6 +262,12 @@ class MouseFragment
         var left = false
         var right = false
         var middle = false
+        if(event.actionMasked != MotionEvent.ACTION_POINTER_UP && event.actionMasked != MotionEvent.ACTION_UP){
+            left = this.left
+            right = this.right
+            middle = this.middle
+        }
+
 
         // Check whether a pointer is on a button, and if, check whether it is currently releasing or not
         for (i in 0 until event.pointerCount) {
@@ -288,7 +294,8 @@ class MouseFragment
                 )
             ) { // Right Mouse Button
                 if (event.actionIndex == i && event.actionMasked != MotionEvent.ACTION_POINTER_UP && event.actionMasked != MotionEvent.ACTION_UP || event.actionIndex != i)
-                    right = true
+                    if(!left && !middle)
+                        right = true
             }
             if (within(
                     event.getX(i),
@@ -299,8 +306,9 @@ class MouseFragment
                     middleHeight
                 )
             ) { // Middle Mouse Button
-                if (event.actionIndex == i && event.actionMasked != MotionEvent.ACTION_POINTER_UP && event.actionMasked != MotionEvent.ACTION_UP || event.actionIndex != i) middle =
-                    true
+                if (event.actionIndex == i && event.actionMasked != MotionEvent.ACTION_POINTER_UP && event.actionMasked != MotionEvent.ACTION_UP || event.actionIndex != i)
+                    if(!left && !right)
+                        middle = true
                 if (!this.middle && middle) {
                     middleStart = event.getY(i).toInt()
                     middleStartTime = System.currentTimeMillis()

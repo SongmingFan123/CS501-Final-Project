@@ -203,6 +203,8 @@ class MainActivity : AppCompatActivity(),
                 R.id.drawer_slides_controller -> {
                     switchFragment(SlidesControllerFragment(inputs), false)
                     bar!!.visibility = View.GONE
+                    mouseActive = true
+                    inputs!!.start()
                 }
 
                 else -> {
