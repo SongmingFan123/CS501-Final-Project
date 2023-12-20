@@ -205,6 +205,7 @@ class TouchpadFragment
                 if(!isMoving){
                     mouse!!.setLeftButton(false)
                 }
+                downTimeI = 0
             }
         }
         if(event.pointerCount == 2){
