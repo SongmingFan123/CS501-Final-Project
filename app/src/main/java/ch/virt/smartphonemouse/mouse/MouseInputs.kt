@@ -17,7 +17,7 @@ class MouseInputs
     private var thread: Thread? = null
     private var running = false
     private var lastTime: Long = 0
-
+    //start taking mouse inputs
     fun start() {
         if (running) return
         thread = Thread { this.run() }
@@ -26,7 +26,7 @@ class MouseInputs
         running = true
         thread!!.start()
     }
-
+    //running mouse input
     private fun run() {
         lastTime = System.nanoTime()
         while (running) {
@@ -37,11 +37,11 @@ class MouseInputs
             }
         }
     }
-
+    //stop running taking mouse input
     fun stop() {
         running = false
     }
-
+    //send mouse input update
     private fun sendUpdate() {
         val x = xPosition.toInt()
         val y = yPosition.toInt()
@@ -58,27 +58,27 @@ class MouseInputs
         yPosition -= y.toFloat()
         wheelPosition = 0
     }
-
+    //change mouse wheel position
     fun changeWheelPosition(delta: Int) {
         wheelPosition += delta
     }
-
+    //set left mouse button
     fun setLeftButton(leftButton: Boolean) {
         this.leftButton = leftButton
     }
-
+    //set middle mouse button
     fun setMiddleButton(middleButton: Boolean) {
         this.middleButton = middleButton
     }
-
+    //set right mouse button
     fun setRightButton(rightButton: Boolean) {
         this.rightButton = rightButton
     }
-
+    //change mouse x position
     fun changeXPosition(x: Float) {
         xPosition += x
     }
-
+    //change mouse y position
     fun changeYPosition(y: Float) {
         yPosition += y
     }

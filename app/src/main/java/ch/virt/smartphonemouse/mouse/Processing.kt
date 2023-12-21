@@ -32,7 +32,7 @@ class Processing(private val debug: DebugTransmitter?, private val parameters: P
         sensitivity = parameters.sensitivity
         enableGravityRotation = parameters.enableGravityRotation
     }
-
+    //process the distance
     fun step(time: Float, delta: Float, acceleration: Vec3f, angularVelocity: Vec3f): Vec2f? {
         debug!!.stageFloat(time)
         debug.stageVec3f(acceleration)
@@ -51,7 +51,7 @@ class Processing(private val debug: DebugTransmitter?, private val parameters: P
         debug.commit()
         return distance
     }
-
+    //handling activeness based on given acceleration and angular velocity
     fun active(acceleration: Vec3f, angularVelocity: Vec3f): Boolean {
 
         var acc = acceleration.xy().length()
@@ -70,7 +70,7 @@ class Processing(private val debug: DebugTransmitter?, private val parameters: P
 
         return acc > parameters.thresholdAcceleration || rot > parameters.thresholdRotation
     }
-
+    //handling gravity
     fun gravity(active: Boolean, acceleration: Vec3f, rotationDelta: Vec3f?): Vec2f? {
 
         if (active) {
@@ -86,7 +86,7 @@ class Processing(private val debug: DebugTransmitter?, private val parameters: P
 
         return acceleration.xy().subtract(gravityCurrent!!.xy())
     }
-
+    //handling distance depending on velocity
     fun distance(
         delta: Float,
         active: Boolean,
