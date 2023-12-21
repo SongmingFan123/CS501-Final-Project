@@ -13,13 +13,13 @@ import ch.virt.smartphonemouse.ui.connect.ConnectConnectingSubfragment
 import ch.virt.smartphonemouse.ui.connect.ConnectFailedSubfragment
 import ch.virt.smartphonemouse.ui.connect.ConnectSelectSubfragment
 
-/**
- * This fragment to show the user the current connection status and allow the user to change it.
- */
+
+ //This fragment to show the user the current connection status and allow the user to change it.
+
 class ConnectFragment
-/**
- * Fragment created
- */
+
+ //Fragment created
+
     (private val bluetooth: BluetoothHandler?) : Fragment(R.layout.fragment_connect) {
     private var status: ImageView? = null
     private var statusText: TextView? = null
@@ -30,9 +30,9 @@ class ConnectFragment
         update()
     }
 
-    /**
-     * content of page updated depending on the current status
-     */
+
+    //Content of page updated depending on the current status
+
     fun update() {
         if (bluetooth!!.isInitialized) {
             if (bluetooth.isConnecting) {

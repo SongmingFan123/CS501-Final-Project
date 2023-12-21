@@ -57,6 +57,8 @@
     <string name="dialog_info_last_format">日/月/年</string>
     <string name="connect_connecting_status_establishing">正在建立连接……</string>
     <string name="connect_connected_mouse">转到鼠标</string>
+    <string name="connect_connected_touchpad">转到触摸板</string>
+    <string name="connect_connected_slide">转到幻灯片控制</string>
     <string name="connect_connected_disconnect">断开连接</string>
     <string name="connect_connected_name">已连接至：:</string>
     <string name="connect_connected_elapsed">已耗时 %s</string>

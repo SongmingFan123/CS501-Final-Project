@@ -57,6 +57,8 @@
     <string name="dialog_info_last_format">dd/MM/yy</string>
     <string name="connect_connecting_status_establishing">Establishing connection…</string>
     <string name="connect_connected_mouse">To Mouse</string>
+    <string name="connect_connected_touchpad">To Touchpad</string>
+    <string name="connect_connected_slide">To Slide</string>
     <string name="connect_connected_disconnect">Disconnect</string>
     <string name="connect_connected_name">Connected to:</string>
     <string name="connect_connected_elapsed">%s elapsed</string>
