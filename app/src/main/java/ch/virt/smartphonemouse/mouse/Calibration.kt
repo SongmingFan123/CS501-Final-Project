@@ -17,17 +17,18 @@ class Calibration(private var listener: StateListener, private val params: Param
     private var noiseAverage: WindowAverage? = null
     private var durationSampling = 0f
     private var durationNoise = 0f
+    //setting listener
     fun setListener(listener: StateListener) {
         this.listener = listener
     }
-
+    //calibration begines
     fun startCalibration() {
         Log.d(TAG, "Starting Sampling Rate Calibration")
         samples = 0
         durationSampling = params.calibrationSamplingTime
         updateState(STATE_SAMPLING)
     }
-
+    //start measureing noise
     private fun startNoise() {
         Log.d(TAG, "Starting measuring noise")
         val samplingRate = samples / durationSampling
@@ -39,14 +40,14 @@ class Calibration(private var listener: StateListener, private val params: Param
         durationNoise = params.calibrationNoiseTime
         updateState(STATE_NOISE)
     }
-
+    //calibration ended
     private fun endCalibration() {
         Log.d(TAG, "Ending Calibration")
         params.measureNoise(accelerationNoise, rotationNoise)
         params.isCalibrated = true
         updateState(STATE_END)
     }
-
+    //remove noise and calculate the rotation activation given data information
     fun data(time: Float, acceleration: Vec3f, angularVelocity: Vec3f) {
         if (!started) {
             startTime = time
@@ -76,13 +77,13 @@ class Calibration(private var listener: StateListener, private val params: Param
             rotationNoise!!.add(rot)
         }
     }
-
+    //update calibration state
     private fun updateState(state: Int) {
         this.state = state
         started = false
         listener.update(state)
     }
-
+    //state listener
     interface StateListener {
         fun update(state: Int)
     }
