@@ -8,7 +8,7 @@ class WindowAverage3f(length: Int) {
     init {
         elements = arrayOfNulls(length)
     }
-
+    //window average in vec3f
     fun avg(next: Vec3f?): Vec3f? {
         elements[index % elements.size] = next
         index++

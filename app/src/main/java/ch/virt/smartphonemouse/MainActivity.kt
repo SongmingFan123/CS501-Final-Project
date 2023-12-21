@@ -23,7 +23,6 @@ import ch.virt.smartphonemouse.ui.HomeFragment
 import ch.virt.smartphonemouse.ui.MouseFragment
 import ch.virt.smartphonemouse.ui.SlidesControllerFragment
 import ch.virt.smartphonemouse.ui.TouchpadFragment
-import ch.virt.smartphonemouse.ui.settings.dialog.CalibrateDialog
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
 import java.util.Locale
@@ -169,12 +168,6 @@ class MainActivity : AppCompatActivity(),
      */
     fun navigate(entry: Int): Boolean {
         if (entry == R.id.drawer_mouse) {
-            Log.d(TAG, "isCalibrated: " + Parameters(PreferenceManager.getDefaultSharedPreferences(this)).isCalibrated)
-            if (!Parameters(PreferenceManager.getDefaultSharedPreferences(this)).isCalibrated) { // Make sure that the sampling rate is calibrated
-                val dialog = CalibrateDialog()
-                dialog.show(supportFragmentManager, null)
-                return true
-            }
             bar!!.visibility = View.GONE
             switchFragment(MouseFragment(inputs), false)
             mouseActive = true
