@@ -4,6 +4,8 @@ import android.util.Log
 import ch.virt.smartphonemouse.mouse.components.WindowAverage
 import ch.virt.smartphonemouse.mouse.math.Vec3f
 
+private const val TAG = "Calibration"
+// For mouse movement calibration
 class Calibration(private var listener: StateListener, private val params: Parameters) {
     var state = STATE_START
     var started = false
@@ -27,20 +29,20 @@ class Calibration(private var listener: StateListener, private val params: Param
     }
 
     private fun startNoise() {
-        Log.d(TAG, "Starting Noise Level Calibration")
+        Log.d(TAG, "Starting measuring noise")
         val samplingRate = samples / durationSampling
         params.calibrateSamplingRate(samplingRate)
-        accelerationNoise = ArrayList()
-        rotationNoise = ArrayList()
         gravityAverage = WindowAverage(params.lengthWindowGravity)
         noiseAverage = WindowAverage(params.lengthWindowNoise)
+        accelerationNoise = ArrayList()
+        rotationNoise = ArrayList()
         durationNoise = params.calibrationNoiseTime
         updateState(STATE_NOISE)
     }
 
     private fun endCalibration() {
         Log.d(TAG, "Ending Calibration")
-        params.calibrateNoiseLevels(accelerationNoise, rotationNoise)
+        params.measureNoise(accelerationNoise, rotationNoise)
         params.isCalibrated = true
         updateState(STATE_END)
     }
@@ -61,7 +63,6 @@ class Calibration(private var listener: StateListener, private val params: Param
             }
             var acc = acceleration.xy().length()
 
-            // Remove gravity or rather lower frequencies
             val gravity = gravityAverage!!.avg(acc)
             acc -= gravity
             acc = Math.abs(acc)
@@ -87,7 +88,6 @@ class Calibration(private var listener: StateListener, private val params: Param
     }
 
     companion object {
-        private const val TAG = "Calibration"
         const val STATE_START = 0
         const val STATE_SAMPLING = 1
         const val STATE_NOISE = 3
