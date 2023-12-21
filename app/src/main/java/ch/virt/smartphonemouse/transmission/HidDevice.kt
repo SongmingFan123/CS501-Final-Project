@@ -61,7 +61,7 @@ class HidDevice
 
     }
 
-    override fun onAppStatusChanged(pluggedDevice: BluetoothDevice, registered: Boolean) {
+    override fun onAppStatusChanged(pluggedDevice: BluetoothDevice?, registered: Boolean) {
         isRegistered = registered
         Log.d(
             TAG,
@@ -69,7 +69,7 @@ class HidDevice
         )
     }
 
-    override fun onConnectionStateChanged(de: BluetoothDevice, state: Int) {
+    override fun onConnectionStateChanged(de: BluetoothDevice?, state: Int) {
         when (state) {
             BluetoothHidDevice.STATE_CONNECTED -> {
                 isConnecting = false
