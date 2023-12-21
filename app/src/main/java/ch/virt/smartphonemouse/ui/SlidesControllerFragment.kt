@@ -1,7 +1,5 @@
 package ch.virt.smartphonemouse.ui
 
-import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
@@ -11,28 +9,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowInsets
 import android.view.WindowManager
-import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.RelativeLayout
-import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.preference.PreferenceManager
 import ch.virt.smartphonemouse.R
 import ch.virt.smartphonemouse.mouse.MouseInputs
 
 class SlidesControllerFragment (private val mouse : MouseInputs?): Fragment(R.layout.fragment_slides_controller) {
     private var root: RelativeLayout? = null
-    private var width = 0
     private var theme = false
-
     private var visuals = false
     private var vibrations = false
     private var buttonIntensity = 0
     private var buttonLength = 0
     private var vibrator: Vibrator? = null
     private var scrollDistance = 3
-
-
     private var previousButton : ImageButton? = null
     private var nextButton : ImageButton? = null
 
@@ -70,12 +61,15 @@ class SlidesControllerFragment (private val mouse : MouseInputs?): Fragment(R.la
         }
         super.onDestroyView()
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         root = view.findViewById(R.id.slides_controller_root)
         root?.setBackgroundResource(if (theme) R.color.mouse_background_dark else R.color.mouse_background_light)
-
     }
+    /**
+     * If the vibrations of the device are enabled, the device vibrates
+     */
     private fun vibrate(length: Int, intensity: Int) {
         if (vibrations) vibrator!!.vibrate(
             VibrationEffect.createOneShot(

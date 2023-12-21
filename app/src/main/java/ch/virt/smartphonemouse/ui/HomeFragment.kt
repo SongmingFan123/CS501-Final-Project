@@ -1,13 +1,11 @@
 package ch.virt.smartphonemouse.ui
 
-import android.content.pm.PackageManager
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import ch.virt.smartphonemouse.MainActivity
 import ch.virt.smartphonemouse.R
@@ -52,7 +50,8 @@ class HomeFragment
             HomeDisabledSubfragment(
                 bluetooth
             )
-        )else if (bluetooth.isConnected) setStatus(
+        )
+        else if (bluetooth.isConnected) setStatus(
             R.color.status_connected,
             R.string.home_status_connected,
             R.string.home_button_connected,
@@ -94,24 +93,4 @@ class HomeFragment
             .replace(R.id.home_container, fragment).commit()
     }
 
-    private fun checkPermissions() {
-        val permission1 =
-            ActivityCompat.checkSelfPermission(requireContext(), "android.permission.BLUETOOTH_SCAN")
-        val permission2 =
-            ActivityCompat.checkSelfPermission(requireContext(), "android.permission.BLUETOOTH_CONNECT")
-        if (permission1 != PackageManager.PERMISSION_GRANTED) {
-            // We don't have permission so prompt the user
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf("android.permission.BLUETOOTH_SCAN"),
-                1
-            )
-        } else if (permission2 != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf("android.permission.BLUETOOTH_CONNECT"),
-                1
-            )
-        }
-    }
 }

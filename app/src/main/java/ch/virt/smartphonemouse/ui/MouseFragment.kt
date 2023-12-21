@@ -155,7 +155,6 @@ class MouseFragment
     @SuppressLint("ClickableViewAccessibility", "ServiceCast")
     private fun init() {
         root!!.post {
-            // Wait for root view to get its size
             calculate()
             if (visuals) createVisuals()
         }
@@ -332,14 +331,11 @@ class MouseFragment
         // Update Feedback
         if (this.left != left) {
             vibrate(buttonLength, buttonIntensity)
-//            setVisibility(leftView, left)
         }
         if (this.right != right) {
             vibrate(buttonLength, buttonIntensity)
-//            setVisibility(rightView, right)
         }
         if (this.middle != middle) {
-//            if (!middle) setVisibility(middleView, false)
             if (!middle && middleDecided && !middleScrolling) vibrate(buttonLength, buttonIntensity)
         }
 
@@ -359,10 +355,7 @@ class MouseFragment
     }
 
     /**
-     * Vibrates the device if the vibrations are enabled.
-     *
-     * @param length    length of the vibration
-     * @param intensity intensity of the vibration
+     * If the vibrations of the device are enabled, the device vibrates
      */
     private fun vibrate(length: Int, intensity: Int) {
         if (vibrations) vibrator!!.vibrate(
@@ -374,10 +367,7 @@ class MouseFragment
     }
 
     /**
-     * Sets the visibility of a view if the visuals are enabled.
-     *
-     * @param view    view to set visibility for
-     * @param visible whether the view is visible
+     * Setting the visibility of a view when the visuals are enabled.
      */
     private fun setVisibility(view: View?, visible: Boolean) {
         if (!visuals) return
@@ -386,15 +376,7 @@ class MouseFragment
 
     companion object {
         /**
-         * Checks whether certain coordinates are within a boundary.
-         *
-         * @param touchX x coordinate
-         * @param touchY y coordinate
-         * @param x      x coordinate of the boundary
-         * @param y      y coordinate of the boundary
-         * @param width  width of the boundary
-         * @param height height of the boundary
-         * @return whether it is inside
+         * Checking if given coordinates are within a given boundary
          */
         private fun within(
             touchX: Float,
