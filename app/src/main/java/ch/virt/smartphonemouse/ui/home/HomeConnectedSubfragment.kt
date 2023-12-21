@@ -33,13 +33,6 @@ class HomeConnectedSubfragment
         handler?.host?.connectedSince?.let { chronometer?.setBase(it) }
         chronometer?.setFormat(resources.getString(R.string.home_connected_elapsed))
         chronometer?.start()
-//        if (ActivityCompat.checkSelfPermission(
-//                requireContext(),
-//                Manifest.permission.BLUETOOTH_CONNECT
-//            ) == PackageManager.PERMISSION_GRANTED
-//        ) {
-//            device?.setText(handler?.host?.device?.name)
-//        }
         device?.setText(handler?.host?.device?.name)
         more?.setOnClickListener(View.OnClickListener { v: View? ->
             (activity as MainActivity?)!!.navigate(

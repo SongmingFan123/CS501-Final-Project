@@ -1,17 +1,22 @@
 package ch.virt.smartphonemouse.transmission
 
+import android.Manifest
+import android.app.Activity.RESULT_OK
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothHidDevice
 import android.bluetooth.BluetoothProfile
 import android.bluetooth.BluetoothProfile.ServiceListener
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
+import androidx.core.app.ActivityCompat
 import ch.virt.smartphonemouse.MainActivity
 
 private const val TAG = "BluetoothHandler"
@@ -49,11 +54,19 @@ class BluetoothHandler(private val main: ComponentActivity) : ServiceListener {
     }
 
     fun enableBluetooth() {
+//        if (ActivityCompat.checkSelfPermission(
+//                main,
+//                Manifest.permission.BLUETOOTH_CONNECT
+//            ) == PackageManager.PERMISSION_GRANTED
+//        ){
+//
+//        }
         if (!adapter!!.isEnabled) {
             Log.i(TAG, "Enabling Bluetooth")
             enableBluetoothLauncher.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
         }
     }
+
 
     private fun init() {
         isEnabled = false

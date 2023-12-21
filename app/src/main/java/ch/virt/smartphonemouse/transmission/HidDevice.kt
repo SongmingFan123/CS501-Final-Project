@@ -41,31 +41,24 @@ class HidDevice
         if (ActivityCompat.checkSelfPermission(
                 context,
                 Manifest.permission.BLUETOOTH_CONNECT
-            ) != PackageManager.PERMISSION_GRANTED
+            ) == PackageManager.PERMISSION_GRANTED
         ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return
-        }
-        if (!isRegistered)
-            Log.d(
-                TAG,
-                "Register Result: " + service!!.registerApp(
-                    createSDP(),
-                    null,
-                    null,
-                    context.mainExecutor,
-                    this
+            if (!isRegistered)
+                Log.d(
+                    TAG,
+                    "Register Result: " + service!!.registerApp(
+                        createSDP(),
+                        null,
+                        null,
+                        context.mainExecutor,
+                        this
+                    )
                 )
+            else Log.d(
+                TAG, "The Device is already registered!"
             )
-        else Log.d(
-            TAG, "The Device is already registered!"
-        )
+        }
+
     }
 
     override fun onAppStatusChanged(pluggedDevice: BluetoothDevice, registered: Boolean) {

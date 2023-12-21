@@ -1,11 +1,18 @@
 package ch.virt.smartphonemouse.ui
 
+import android.Manifest
+import android.app.Activity.RESULT_OK
+import android.bluetooth.BluetoothAdapter
+import android.content.Intent
 import android.graphics.drawable.GradientDrawable
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import ch.virt.smartphonemouse.MainActivity
 import ch.virt.smartphonemouse.R
@@ -17,6 +24,7 @@ import ch.virt.smartphonemouse.ui.home.HomeDisconnectedSubfragment
 /**
  * This fragment contains the home page of the app, which shows basic information.
  */
+private const val TAG = "Home Fragment"
 class HomeFragment
 /**
  * Creates the fragment.
@@ -30,6 +38,17 @@ class HomeFragment
     private var button: Button? = null
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            requestMultiplePermissions.launch(arrayOf(
+                Manifest.permission.BLUETOOTH_SCAN,
+                Manifest.permission.BLUETOOTH_CONNECT))
+        }
+        else{
+            val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+            requestBluetooth.launch(enableBtIntent)
+        }
+
         status = view.findViewById(R.id.home_status)
         statusText = view.findViewById(R.id.home_status_text)
         button = view.findViewById(R.id.home_button)
@@ -37,6 +56,20 @@ class HomeFragment
         debugStatus?.setOnClickListener(View.OnClickListener { v: View? -> update() })
         update()
     }
+
+    private var requestBluetooth = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) {}
+        else{
+            //deny
+        }
+    }
+
+    private val requestMultiplePermissions =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            permissions.entries.forEach {
+                Log.d(TAG, "${it.key} = ${it.value}")
+            }
+        }
 
     /**
      * Updating content of the page depending on current page status.
