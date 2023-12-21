@@ -19,7 +19,6 @@ import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
 import ch.virt.smartphonemouse.R
 import ch.virt.smartphonemouse.mouse.MouseInputs
-import ch.virt.smartphonemouse.ui.mouse.MouseUsageDialog
 import java.lang.Math.abs
 
 /**
@@ -123,15 +122,6 @@ class TouchpadFragment
         }
         root!!.setOnTouchListener { v: View?, event: MotionEvent -> viewTouched(event) }
         if (vibrations) vibrator = requireContext().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        if (context?.let { PreferenceManager.getDefaultSharedPreferences(it).getBoolean("showUsage", true) } == true) {
-            mouse!!.stop()
-            val dialog = MouseUsageDialog(object : MouseUsageDialog.UsageFinishedListener {
-                override fun finished() {
-                    mouse.start()
-                }
-            })
-            dialog.show(parentFragmentManager, null)
-        }
     }
 
 

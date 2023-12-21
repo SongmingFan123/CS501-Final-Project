@@ -21,7 +21,6 @@ import androidx.preference.PreferenceManager
 import ch.virt.smartphonemouse.R
 import ch.virt.smartphonemouse.mouse.MouseInputs
 import ch.virt.smartphonemouse.mouse.MovementHandler
-import ch.virt.smartphonemouse.ui.mouse.MouseUsageDialog
 
 /**
  * This fragment represents the mouse interface the user uses to input button clicks.
@@ -162,17 +161,6 @@ class MouseFragment
         }
         root!!.setOnTouchListener { v: View?, event: MotionEvent -> viewTouched(event) }
         if (vibrations) vibrator = requireContext().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        if (context?.let { PreferenceManager.getDefaultSharedPreferences(it).getBoolean("showUsage", true) } == true) {
-            movement!!.unregister()
-            mouse!!.stop()
-            val dialog = MouseUsageDialog(object : MouseUsageDialog.UsageFinishedListener {
-                override fun finished() {
-                    mouse.start()
-                    movement.register()
-                }
-            })
-            dialog.show(parentFragmentManager, null)
-        }
     }
 
     /**

@@ -7,10 +7,6 @@
     <string name="title_home">主页</string>
     <string name="home_status_init">正在初始化</string>
     <string name="home_button_init">正在初始化</string>
-    <string name="home_status_unsupported">不支持</string>
-    <string name="home_button_unsupported">返回</string>
-    <string name="home_unsupported_message">您的设备似乎不支持运行此应用程序所需的蓝牙HID配置文件。<br />并非所有设备都支持此配置文件。有时，可能会在固件更新中添加对该配置文件的支持。</string>
-    <string name="home_unsupported_playstore">在商店中打开</string>
     <string name="home_status_disconnected">已断开连接</string>
     <string name="home_button_disconnected">连接</string>
     <string name="home_connected_message">连接至：</string>
