@@ -195,15 +195,17 @@ class MainActivity : AppCompatActivity(),
         transaction.commit()
     }
 
+    //Returns the currently shown fragment.
     private val currentFragment: Fragment?
-        //Returns the currently shown fragment.
         private get() = supportFragmentManager.findFragmentById(R.id.container)
 
     override fun onBackPressed() {
         if (supportFragmentManager.backStackEntryCount > 0) super.onBackPressed() // If something is on the backstack proceed
         else {
-            if (currentFragment !is HomeFragment) { // Navigate to home if not in sub fragment and not in home
-                if (currentFragment !is MouseFragment) navigate(R.id.drawer_home) // Make exception for mouse fragment
+            if (currentFragment !is ConnectFragment) {
+                if (currentFragment !is MouseFragment ||
+                    currentFragment !is TouchpadFragment ||
+                    currentFragment !is SlidesControllerFragment) navigate(R.id.drawer_connect)
             } else super.onBackPressed()
         }
     }
