@@ -27,14 +27,8 @@ import ch.virt.smartphonemouse.transmission.BluetoothDiscoverer.DiscoveredDevice
 import ch.virt.smartphonemouse.transmission.BluetoothHandler
 import ch.virt.smartphonemouse.transmission.HostDevice
 
-/**
- * This dialog is shown when the user wants to add a device.
- */
-class AddDialog
-/**
- * Creates an add dialog.
- * @param bluetoothHandler bluetooth handler to use
- */(private val bluetoothHandler: BluetoothHandler?) : DialogFragment() {
+// Dialog to add a device.
+class AddDialog (private val bluetoothHandler: BluetoothHandler?) : DialogFragment() {
     private var positiveButton: Button? = null
     private var negativeButton: Button? = null
     private var neutralButton: Button? = null
@@ -64,13 +58,13 @@ class AddDialog
             .setNegativeButton(R.string.dialog_add_cancel, null)
             .setNeutralButton("-", null)
         dialog = builder.create()
-        dialog?.setTitle("-") // Add default title so it is shown
+        dialog?.setTitle("-")
         dialog?.setOnShowListener(OnShowListener { dialogInterface: DialogInterface? ->
             positiveButton = dialog?.getButton(AlertDialog.BUTTON_POSITIVE)
             negativeButton = dialog?.getButton(AlertDialog.BUTTON_NEGATIVE)
             neutralButton = dialog?.getButton(AlertDialog.BUTTON_NEUTRAL)
-            positiveButton?.setOnClickListener(View.OnClickListener { v: View? -> onNext() })
-            neutralButton?.setOnClickListener(View.OnClickListener { v: View? -> onNeutral() })
+            positiveButton?.setOnClickListener(View.OnClickListener { v: View? -> positiveCall() })
+            neutralButton?.setOnClickListener(View.OnClickListener { v: View? -> neutralCall() })
             created()
         })
         return dialog as Dialog
@@ -83,28 +77,20 @@ class AddDialog
         dismissListener!!.onDismiss(dialog)
     }
 
-    /**
-     * This method gets called when the dialog is shown.
-     */
     private fun created() {
         neutralButton!!.visibility = View.GONE
         dialog!!.window!!.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM) // Enable keyboard to be working
         showRequestPermission()
     }
 
-    /**
-     * This method sets a sub fragment.
-     * @param fragment fragment to be set
-     */
+    // Sets a sub fragment.
     private fun setFragment(fragment: Fragment) {
         currentFragment = fragment
         childFragmentManager.beginTransaction().setReorderingAllowed(true)
             .replace(R.id.add_container, currentFragment!!).commit()
     }
 
-    /**
-     * This method shows the fragment that requests the permission to discover devices.
-     */
+    // This method shows the fragment that requests the permission to discover devices.
     fun showRequestPermission() {
         state = REQUEST_PERMISSION_STATE
         if (ActivityCompat.checkSelfPermission(
@@ -122,9 +108,7 @@ class AddDialog
         neutralButton!!.setText(R.string.dialog_add_select_manual)
     }
 
-    /**
-     * This method shows the fragment that requests the user to turn on location in order to discover devices.
-     */
+    // This method shows the fragment that requests the user to turn on location.
     fun showRequestSetting() {
         state = REQUEST_SETTING_STATE
         if (LocationManagerCompat.isLocationEnabled((requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager))) {
@@ -138,9 +122,7 @@ class AddDialog
         neutralButton!!.setText(R.string.dialog_add_select_manual)
     }
 
-    /**
-     * This method shows the fragment where the user can select form nearby devices.
-     */
+    // This method shows the fragment where the user can select form nearby devices.
     fun showSelect() {
         state = SELECT_STATE
         val fragment = AddSelectSubdialog(bluetoothHandler)
@@ -156,9 +138,7 @@ class AddDialog
         neutralButton!!.setText(R.string.dialog_add_select_manual)
     }
 
-    /**
-     * This method shows the fragment where the user can enter their device details manually.
-     */
+    // This method shows the fragment where the user can enter their device details manually.
     fun showManual() {
         state = MANUAL_STATE
         setFragment(AddManualSubdialog())
@@ -167,9 +147,7 @@ class AddDialog
         neutralButton!!.visibility = View.GONE
     }
 
-    /**
-     * This method shows the fragment which tells the user that they have to remove the target device from their bonded devices.
-     */
+    // This method shows the fragment which tells the user that they have to remove the target device from their bonded devices.
     fun showBonded() {
         state = BONDED_STATE
         setFragment(AddBondedSubdialog(bluetoothHandler, target))
@@ -178,9 +156,7 @@ class AddDialog
         neutralButton!!.visibility = View.GONE
     }
 
-    /**
-     * This method shows the fragment which tells the user that the device is already added.
-     */
+    // This method shows the fragment which tells the user that the device is already added.
     fun showAlready() {
         state = ALREADY_STATE
         setFragment(AddAlreadySubdialog())
@@ -191,9 +167,7 @@ class AddDialog
         positiveButton!!.setText(R.string.dialog_add_already_positive)
     }
 
-    /**
-     * This method shows the fragment which tells the user that the device was added successfully.
-     */
+    // This method shows the fragment which tells the user that the device was added successfully.
     fun showSuccess() {
         state = SUCCESS_STATE
         setFragment(AddSuccessSubdialog(target))
@@ -204,18 +178,13 @@ class AddDialog
         positiveButton!!.setText(R.string.dialog_add_success_positive)
     }
 
-    /**
-     * Adds the target device to the device storage and displays the success message.
-     */
+    // Adds the target device to the device storage and displays the success message.
     fun finished() {
         bluetoothHandler?.devices?.addDevice(HostDevice(target?.address, target?.name))
         showSuccess()
     }
 
-    /**
-     * Proceeds after a device has been selected.
-     * @param device selected device.
-     */
+    // Proceeds after a device has been selected.
     fun selected(device: DiscoveredDevice?) {
         target = device
         if (device != null) {
@@ -225,12 +194,10 @@ class AddDialog
         }
     }
 
-    /**
-     * This method is called when the positive button is clicked.
-     */
-    fun onNext() {
+    // This method is called when the positive button is clicked.
+    fun positiveCall() {
         when (state) {
-            REQUEST_PERMISSION_STATE -> requestPermission()
+            REQUEST_PERMISSION_STATE -> {requestLocation!!.launch(Manifest.permission.ACCESS_FINE_LOCATION)}
             REQUEST_SETTING_STATE -> requestSetting()
             MANUAL_STATE -> if ((currentFragment as AddManualSubdialog?)!!.check()) selected(
                 (currentFragment as AddManualSubdialog?)!!.createDevice()
@@ -244,33 +211,19 @@ class AddDialog
         }
     }
 
-    /**
-     * This method is called when the neutral button is clicked.
-     */
-    fun onNeutral() {
+    // This method is called when the neutral button is clicked.
+    fun neutralCall() {
         if (state == SELECT_STATE || state == REQUEST_PERMISSION_STATE || state == REQUEST_SETTING_STATE) showManual()
     }
 
-    /**
-     * Launches the request permission intent to request location permissions.
-     */
-    fun requestPermission() {
-        requestLocation!!.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-    }
-
-    /**
-     * Proceeds after the permission may have been granted.
-     * @param isGranted whether it was granted
-     */
+    // Proceeds after the permission may have been granted.
     fun checkPermission(isGranted: Boolean) {
         if (isGranted) {
             showRequestSetting()
         } else (currentFragment as AddRequestPermissionSubdialog?)!!.showError()
     }
 
-    /**
-     * Launches the request intent to request to turn on location.
-     */
+    // Launches the request intent to request to turn on location.
     fun requestSetting() {
         if (LocationManagerCompat.isLocationEnabled((requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager))) {
             showSelect()
@@ -279,9 +232,7 @@ class AddDialog
         }
     }
 
-    /**
-     * Checks whether the location setting was turned on.
-     */
+    // Checks whether the location setting was turned on.
     fun checkSetting() {
         if (LocationManagerCompat.isLocationEnabled((requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager))) {
             showSelect()
@@ -290,13 +241,7 @@ class AddDialog
         }
     }
 
-    /**
-     * Sets the dismiss listener.
-     * The listener should be set before the dialog is shown.
-     *
-     * @param dismissListener dismiss listener that will be passed to the dialog
-     * @see Dialog.setOnDismissListener
-     */
+    // Sets the dismiss listener.
     fun setOnDismissListener(dismissListener: DialogInterface.OnDismissListener?) {
         this.dismissListener = dismissListener
     }

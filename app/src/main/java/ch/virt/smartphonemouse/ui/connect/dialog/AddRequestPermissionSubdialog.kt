@@ -6,19 +6,11 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import ch.virt.smartphonemouse.R
 
-/**
- * This class holds a sub page for the add dialog when the user must grant the app permissions to discover new devices.
- */
-class AddRequestPermissionSubdialog
-/**
- * Creates the sub dialog.
- */
-    : Fragment(R.layout.subdialog_add_requestpermission) {
+// This class holds a sub page for the add dialog when the user must grant the app permissions to discover new devices.
+class AddRequestPermissionSubdialog: Fragment(R.layout.subdialog_add_requestpermission) {
     private var error: TextView? = null
 
-    /**
-     * Displays the error on the screen.
-     */
+    // Displays the error on the screen.
     fun showError() {
         error!!.post { error!!.visibility = View.VISIBLE }
     }

@@ -17,33 +17,20 @@ import ch.virt.smartphonemouse.transmission.BluetoothDiscoverer.DiscoveredDevice
 import ch.virt.smartphonemouse.transmission.BluetoothHandler
 import ch.virt.smartphonemouse.ui.connect.dialog.AddSelectSubdialog.ListAdapter.SelectListener
 
-/**
- * This class holds a sub page for the add dialog that is used to display discovered devices and to select them.
- */
-class AddSelectSubdialog
-/**
- * Creates the sub dialog.
- *
- * @param bluetoothAdapter bluetooth handler to use
- */(private val bluetooth: BluetoothHandler?) : Fragment(R.layout.subdialog_add_select) {
+// This class holds a sub page for the add dialog that is used to display discovered devices and to select them.
+class AddSelectSubdialog (private val bluetooth: BluetoothHandler?) : Fragment(R.layout.subdialog_add_select) {
     private var scanning: Button? = null
     private var list: RecyclerView? = null
     private var adapter: ListAdapter? = null
     private var selectListener: SelectListener? = null
 
-    /**
-     * Starts the discovery.
-     */
+    // Starts the discovery.
     private fun startDiscovery() {
         bluetooth?.discoverer?.reset()
         bluetooth?.discoverer?.startDiscovery()
     }
 
-    /**
-     * This method updates the scan button.
-     *
-     * @param status current scanning status
-     */
+    // This method updates the scan button.
     private fun discoveryUpdated(status: Boolean) {
         if (status) {
             scanning!!.isEnabled = false
@@ -54,12 +41,7 @@ class AddSelectSubdialog
         }
     }
 
-    /**
-     * Sets the listener for when a device has been selected.
-     * This method has to be called before the dialog is shown.
-     *
-     * @param selectListener select listener
-     */
+    // Sets the listener for when a device has been selected.
     fun setSelectListener(selectListener: SelectListener?) {
         this.selectListener = selectListener
     }
@@ -87,23 +69,12 @@ class AddSelectSubdialog
         startDiscovery()
     }
 
-    /**
-     * This list adapter handles the recycler view that shows all the discovered devices.
-     */
-    class ListAdapter
-    /**
-     * Creates the list adapter.
-     *
-     * @param devices devices to show
-     */(private val devices: List<DiscoveredDevice?>?) :
+    // This list adapter handles the recycler view that shows all the discovered devices.
+    class ListAdapter(private val devices: List<DiscoveredDevice?>?) :
         RecyclerView.Adapter<ListAdapter.ViewHolder>() {
         private var selectListener: SelectListener? = null
 
-        /**
-         * Sets the listener that is called when a device is selected.
-         *
-         * @param selectListener select listener
-         */
+        // Sets the listener that is called when a device is selected.
         fun setSelectListener(selectListener: SelectListener?) {
             this.selectListener = selectListener
         }
@@ -122,30 +93,20 @@ class AddSelectSubdialog
             return devices!!.size
         }
 
-        /**
-         * This class is the view holder for the recycler view that shows the discovered devices.
-         */
+        // This class is the view holder for the recycler view that shows the discovered devices.
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             private val label: TextView
             private val icon: ImageView
             private var device: DiscoveredDevice? = null
 
-            /**
-             * Creates the view holder.
-             *
-             * @param view view that the holder holds
-             */
+            // Creates the view holder.
             init {
                 view.setOnClickListener { v: View? -> selectListener!!.called(device) }
                 label = view.findViewById(R.id.add_select_list_item_text)
                 icon = view.findViewById(R.id.add_select_list_item_icon)
             }
 
-            /**
-             * Populates the view with the data about one device.
-             *
-             * @param device device to populate with
-             */
+            // Populates the view with the data about one device.
             fun populate(device: DiscoveredDevice?) {
                 this.device = device
                 label.text = device?.name
@@ -159,15 +120,8 @@ class AddSelectSubdialog
             }
         }
 
-        /**
-         * This interface is a basic listener for when a list entry is selected.
-         */
+        // This interface is a basic listener for when a list entry is selected.
         interface SelectListener {
-            /**
-             * Called when a list entry is selected.
-             *
-             * @param device device that is selected
-             */
             fun called(device: DiscoveredDevice?)
         }
     }
