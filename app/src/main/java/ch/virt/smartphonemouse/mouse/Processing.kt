@@ -70,7 +70,7 @@ class Processing(private val debug: DebugTransmitter?, parameters: Parameters) {
     fun active(acceleration: Vec3f, angularVelocity: Vec3f): Boolean {
 
         // Calculate the acceleration activation
-        var acc = acceleration.xy().abs()
+        var acc = acceleration.xy().length()
         debug!!.stageFloat(acc)
 
         // Remove gravity or rather lower frequencies
@@ -102,7 +102,8 @@ class Processing(private val debug: DebugTransmitter?, parameters: Parameters) {
             }
 
             // Rotate current gravity
-            if (enableGravityRotation) gravityCurrent!!.rotate(rotationDelta!!.copy().negative())
+            var tmp = Vec3f(rotationDelta!!.x, rotationDelta.y, rotationDelta.z)
+            if (enableGravityRotation) gravityCurrent!!.rotate(tmp.negative())
         } else {
             // Just calculate the average of the samples
             gravityCurrent = gravityInactiveAverage.avg(acceleration)

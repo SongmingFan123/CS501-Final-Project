@@ -32,14 +32,6 @@
                 android:text="@string/connect_select_item_unknown"
                 android:textSize="16sp" />
 
-            <TextView
-                android:id="@+id/connect_select_list_item_last"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/connect_select_item_last"
-                android:textAlignment="textEnd"
-                android:layout_marginEnd="5dp"/>
-
         </LinearLayout>
 
         <ImageView

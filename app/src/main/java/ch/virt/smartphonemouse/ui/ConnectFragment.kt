@@ -40,15 +40,7 @@ class ConnectFragment
                 loadFragment(ConnectConnectingSubfragment())
                 setStatus(R.color.status_connecting, R.string.connect_status_connecting)
             } else if (!bluetooth.isConnected) {
-                if (bluetooth.host?.hasFailed() == true) {
-                    val fragment = ConnectFailedSubfragment(bluetooth)
-                    fragment.setReturnListener (object : ConnectFailedSubfragment.ReturnListener {
-                        override fun returned() {
-                            update()
-                        }
-                    })
-                    loadFragment(fragment)
-                } else loadFragment(ConnectSelectSubfragment(bluetooth))
+                loadFragment(ConnectSelectSubfragment(bluetooth))
                 setStatus(R.color.status_disconnected, R.string.connect_status_disconnected)
             } else {
                 loadFragment(ConnectConnectedSubfragment(bluetooth))
@@ -56,17 +48,6 @@ class ConnectFragment
             }
         }
     }
-//    fun update() {
-//        if (bluetooth!!.isInitialized) {
-//            if (!bluetooth.isConnected) {
-//                loadFragment(ConnectSelectSubfragment(bluetooth))
-//                setStatus(R.color.status_disconnected, R.string.connect_status_disconnected)
-//            } else {
-//                loadFragment(ConnectConnectedSubfragment(bluetooth))
-//                setStatus(R.color.status_connected, R.string.connect_status_connected)
-//            }
-//        }
-//    }
 
     /**
      * Sets the status of the page.

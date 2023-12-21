@@ -33,14 +33,6 @@ class InfoDialog
     private fun populate(view: View) {
         (view.findViewById<View>(R.id.info_address) as TextView).text = device.address
         (view.findViewById<View>(R.id.info_name) as TextView).text = device.name
-        (view.findViewById<View>(R.id.info_last) as TextView).text =
-            if (device.lastConnected == -1L) view.resources.getString(R.string.dialog_info_last_never) else SimpleDateFormat(
-                view.resources.getString(R.string.dialog_info_last_format)
-            ).format(
-                Date(
-                    device.lastConnected
-                )
-            )
     }
 
     /**

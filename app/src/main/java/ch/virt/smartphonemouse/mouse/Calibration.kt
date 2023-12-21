@@ -59,7 +59,7 @@ class Calibration(private var listener: StateListener, private val params: Param
             if (time - startTime > durationNoise) {
                 endCalibration()
             }
-            var acc = acceleration.xy().abs()
+            var acc = acceleration.xy().length()
 
             // Remove gravity or rather lower frequencies
             val gravity = gravityAverage!!.avg(acc)

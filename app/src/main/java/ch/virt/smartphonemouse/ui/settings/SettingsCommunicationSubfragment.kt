@@ -36,7 +36,7 @@ class SettingsCommunicationSubfragment : PreferenceFragmentCompat() {
                     requireContext()
                 ).edit()
                 editor.putString(
-                    DeviceStorage.Companion.DEVICES_KEY,
+                    "devices",
                     "[]"
                 ) // Reset to an empty json array
                 editor.apply()

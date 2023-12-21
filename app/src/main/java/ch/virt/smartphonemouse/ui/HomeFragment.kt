@@ -53,13 +53,8 @@ class HomeFragment
             HomeDisabledSubfragment(
                 bluetooth
             )
-        ) else if (!bluetooth.isSupported) setStatus(
-            R.color.status_unsupported,
-            R.string.home_status_unsupported,
-            R.string.home_button_unsupported,
-            { v: View? -> requireActivity().finish() },
-            HomeUnsupportedSubfragment()
-        ) else if (bluetooth.isConnected) setStatus(
+        )
+        else if (bluetooth.isConnected) setStatus(
             R.color.status_connected,
             R.string.home_status_connected,
             R.string.home_button_connected,
