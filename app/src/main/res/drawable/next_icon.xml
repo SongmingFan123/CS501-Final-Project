@@ -4,7 +4,6 @@
     android:viewportWidth="24"
     android:viewportHeight="24">
 
-    <!-- Left arrow shape -->
     <path
         android:pathData="M12,21L3,3H21Z"
         android:fillColor="#000000"
