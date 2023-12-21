@@ -15,89 +15,18 @@ import androidx.activity.result.contract.ActivityResultContracts.StartActivityFo
 import ch.virt.smartphonemouse.MainActivity
 import ch.virt.smartphonemouse.transmission.hid.HidDevice
 
-
-/**
- * This class handles everything related to bluetooth.
- */
+private const val TAG = "BluetoothHandler"
+// This class handles the bluetooth.
 class BluetoothHandler(private val main: ComponentActivity) : ServiceListener {
-    private var adapter: BluetoothAdapter? = null
-    private var service: BluetoothHidDevice? = null
-
-    /**
-     * Returns the class responsible for discovering new bluetooth devices.
-     *
-     * @return bluetooth discoverer
-     */
-    var discoverer: BluetoothDiscoverer
-        private set
-
-    /**
-     * Returns a storage of all known devices.
-     *
-     * @return known devices
-     */
+    var adapter: BluetoothAdapter? = null
+    var service: BluetoothHidDevice? = null
+    val enableBluetoothLauncher: ActivityResultLauncher<Intent>
     val devices: DeviceStorage
-
-    /**
-     * Returns the hid interface.
-     *
-     * @return hid device to interact with the hid profile
-     */
-    var host: HidDevice? = null
-        private set
-
-    /**
-     * Returns whether bluetooth has ben initialized.
-     *
-     * @return is initialized
-     */
-    var isInitialized = false
-        private set
-
-    /**
-     * Returns whether bluetooth is enabled
-     *
-     * @return is enabled
-     */
     var isEnabled = false
-        private set
+    var host: HidDevice? = null
+    var isInitialized = false
+    var discoverer: BluetoothDiscoverer
 
-    /**
-     * Returns whether the bluetooth hid profile is supported by this device.
-     *
-     * @return is supported
-     */
-    var isSupported = false
-        private set
-    private val enableBluetoothLauncher: ActivityResultLauncher<Intent>
-
-//    fun getDiscoverer(): BluetoothDiscoverer? {
-//        return discoverer
-//    }
-
-    /**
-     * Returns a storage of all known devices.
-     *
-     * @return known devices
-     */
-//    fun getDevices(): DeviceStorage? {
-//        return devices
-//    }
-
-    /**
-     * Returns the hid interface.
-     *
-     * @return hid device to interact with the hid profile
-     */
-//    fun getHost(): HidDevice? {
-//        return host
-//    }
-
-    /**
-     * Creates a bluetooth handler
-     *
-     * @param context activity to use for various things
-     */
     init {
         discoverer = BluetoothDiscoverer(main, adapter)
         devices = DeviceStorage(main)
@@ -105,12 +34,8 @@ class BluetoothHandler(private val main: ComponentActivity) : ServiceListener {
             main.registerForActivityResult(StartActivityForResult()) { result: ActivityResult? -> reInit() }
     }
 
-    /**
-     * Checks whether bluetooth is still turned on and if not, reinitializes
-     *
-     * @return whether a reinitialization is required
-     */
-    fun reInitRequired(): Boolean {
+    // Checks whether bluetooth is still turned on
+    fun reInitForce(): Boolean {
         if (!adapter!!.isEnabled) {
             reInit()
             return true
@@ -118,17 +43,12 @@ class BluetoothHandler(private val main: ComponentActivity) : ServiceListener {
         return false
     }
 
-    /**
-     * Reinitializes the bluetooth things.
-     */
+    // Reinitializes the bluetooth things.
     fun reInit() {
         this.isInitialized = false
         init()
     }
 
-    /**
-     * Enables bluetooth by prompting the user.
-     */
     fun enableBluetooth() {
         if (!adapter!!.isEnabled) {
             Log.i(TAG, "Enabling Bluetooth")
@@ -136,18 +56,13 @@ class BluetoothHandler(private val main: ComponentActivity) : ServiceListener {
         }
     }
 
-    /**
-     * Intitializes the bluetooth things.
-     */
     private fun init() {
-        isSupported = false
         isEnabled = false
         this.isInitialized = false
         adapter = BluetoothAdapter.getDefaultAdapter()
         if (adapter == null) {
             Log.i(TAG, "Bluetooth is not supported")
             this.isInitialized = true
-            isSupported = false
             (main as MainActivity).updateBluetoothStatus()
             return
         }
@@ -158,27 +73,21 @@ class BluetoothHandler(private val main: ComponentActivity) : ServiceListener {
             (main as MainActivity).updateBluetoothStatus()
             return
         } else isEnabled = true
-        open()
+        openProfile()
     }
 
-    /**
-     * Opens the bluetooth hid profile.
-     */
-    private fun open() {
+    // Opens the bluetooth hid profile.
+    private fun openProfile() {
         if (!adapter!!.getProfileProxy(main, this, BluetoothProfile.HID_DEVICE)) {
             Log.i(TAG, "Bluetooth HID profile is not supported")
             this.isInitialized = true
-            isSupported = false
             (main as MainActivity).updateBluetoothStatus()
-            return
         }
-        isSupported = true
+        return
     }
 
-    /**
-     * Registers the app as a hid device.
-     */
-    private fun start() {
+    // Registers the app as a hid device.
+    private fun registerApp() {
         Log.i(TAG, "Opened HID Profile successfully")
         this.isInitialized = true
         discoverer = BluetoothDiscoverer(main, adapter)
@@ -191,7 +100,7 @@ class BluetoothHandler(private val main: ComponentActivity) : ServiceListener {
     override fun onServiceConnected(profile: Int, proxy: BluetoothProfile) {
         if (profile == BluetoothProfile.HID_DEVICE) {
             service = proxy as BluetoothHidDevice
-            start()
+            registerApp()
         }
     }
 
@@ -199,56 +108,25 @@ class BluetoothHandler(private val main: ComponentActivity) : ServiceListener {
         if (profile == BluetoothProfile.HID_DEVICE) {
             Log.i(TAG, "Reconnecting to Service")
             Toast.makeText(main, "Reloading Bluetooth", Toast.LENGTH_SHORT).show()
-            open()
+            openProfile()
         }
     }
 
     val isConnected: Boolean
-        /**
-         * Returns whether the app is connected to a host device.
-         *
-         * @return is connected
-         */
-        get() = if (!this.isInitialized || !isSupported) false else host!!.isConnected
+        get() = if (!this.isInitialized) false else host!!.isConnected
     val isConnecting: Boolean
-        /**
-         * Returns whether the app is currently connecting to a host device
-         *
-         * @return is connecting
-         */
-        get() = if (!this.isInitialized || !isSupported) false else host!!.isConnecting
+        get() = if (!this.isInitialized) false else host!!.isConnecting
 
-    /**
-     * Gets a real bluetooth device from a host device that can be saved.
-     *
-     * @param device saved host device
-     * @return fetched bluetooth device
-     */
-    fun fromHostDevice(device: HostDevice): BluetoothDevice? {
+    // Gets a real bluetooth device from a host device that can be saved.
+    fun getHostDevice(device: HostDevice): BluetoothDevice? {
         return adapter?.getRemoteDevice(device.address)
     }
 
-    /**
-     * Returns whether the smartphone is already bonded to a certain device.
-     *
-     * @param address address of that device
-     * @return whether it is bonded
-     */
+    // Returns whether the smartphone is already bonded to a certain device.
     fun isBonded(address: String?): Boolean {
-//        if (androidx.core.app.ActivityCompat.checkSelfPermission( main,
-//                android.Manifest.permission.BLUETOOTH_CONNECT
-//            ) == android.content.pm.PackageManager.PERMISSION_GRANTED
-//        ) {
-//
-//        }
-//        return false
         for (device in adapter!!.bondedDevices) {
             if (device.address == address) return true
         }
         return false
-    }
-
-    companion object {
-        private const val TAG = "BluetoothHandler"
     }
 }

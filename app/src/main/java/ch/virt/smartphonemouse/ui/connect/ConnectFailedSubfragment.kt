@@ -29,20 +29,12 @@ class ConnectFailedSubfragment
         device = view.findViewById(R.id.connect_failed_device)
         back = view.findViewById(R.id.connect_failed_back)
         remove = view.findViewById(R.id.connect_failed_remove)
-//        if (ActivityCompat.checkSelfPermission(requireContext(),
-//                Manifest.permission.BLUETOOTH_CONNECT
-//            ) == PackageManager.PERMISSION_GRANTED
-//        ) {
-//            device?.setText(bluetooth?.host?.device?.name)
-//        }
         device?.setText(bluetooth?.host?.device?.name)
         remove?.setOnClickListener(View.OnClickListener { v: View? ->
             bluetooth?.devices?.removeDevice(bluetooth.host?.device?.address)
-            bluetooth?.host?.markFailedAsRead()
             listener!!.returned()
         })
         back?.setOnClickListener(View.OnClickListener { v: View? ->
-            bluetooth?.host?.markFailedAsRead()
             listener!!.returned()
         })
     }

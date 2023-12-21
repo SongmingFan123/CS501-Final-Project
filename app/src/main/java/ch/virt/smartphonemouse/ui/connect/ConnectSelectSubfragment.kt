@@ -125,7 +125,6 @@ class ConnectSelectSubfragment
          */
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             private val name: TextView
-            private val last: TextView
             private val settings: ImageView
             private var device: HostDevice? = null
 
@@ -135,7 +134,6 @@ class ConnectSelectSubfragment
              */
             init {
                 name = view.findViewById(R.id.connect_select_list_item_name)
-                last = view.findViewById(R.id.connect_select_list_item_last)
                 settings = view.findViewById(R.id.connect_select_list_item_settings)
                 view.setOnClickListener { v: View? -> connectListener!!.result(device) }
                 settings.setOnClickListener { v: View? -> infoListener!!.result(device) }
@@ -148,12 +146,6 @@ class ConnectSelectSubfragment
             fun setDevice(device: HostDevice?) {
                 this.device = device
                 name.text = device?.name
-                last.text = itemView.resources.getString(
-                    R.string.connect_select_item_last,
-                    if (device?.lastConnected == -1L) itemView.resources.getString(R.string.connect_select_item_never) else SimpleDateFormat(
-                        itemView.resources.getString(R.string.connect_select_item_last_format)
-                    ).format(Date(device?.lastConnected as Long))
-                )
             }
         }
 

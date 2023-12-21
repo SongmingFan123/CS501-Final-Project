@@ -94,13 +94,15 @@ class MainActivity : AppCompatActivity(),
      * Sets the correct state of the nav items in the nav drawer.
      */
     private fun checkNavItems() {
-        if (bluetooth!!.isSupported) {
-            setNavItemEnable(R.id.drawer_connect, true)
-            setNavItemEnable(R.id.drawer_mouse, bluetooth!!.isConnected)
-        } else {
-            setNavItemEnable(R.id.drawer_connect, false)
-            setNavItemEnable(R.id.drawer_mouse, false)
-        }
+        setNavItemEnable(R.id.drawer_connect, true)
+        setNavItemEnable(R.id.drawer_mouse, bluetooth!!.isConnected)
+//        if (bluetooth!!.isSupported) {
+//            setNavItemEnable(R.id.drawer_connect, true)
+//            setNavItemEnable(R.id.drawer_mouse, bluetooth!!.isConnected)
+//        } else {
+//            setNavItemEnable(R.id.drawer_connect, false)
+//            setNavItemEnable(R.id.drawer_mouse, false)
+//        }
     }
 
     /**
@@ -128,7 +130,7 @@ class MainActivity : AppCompatActivity(),
     fun updateBluetoothStatus() {
         if (instanceSaved || currentFragment == null) return
         if (currentFragment is ConnectFragment || currentFragment is MouseFragment) {
-            if (!bluetooth!!.isEnabled || !bluetooth!!.isSupported) navigate(R.id.drawer_home) else if (!bluetooth!!.isConnected && currentFragment is MouseFragment) navigate(
+            if (!bluetooth!!.isEnabled) navigate(R.id.drawer_home) else if (!bluetooth!!.isConnected && currentFragment is MouseFragment) navigate(
                 R.id.drawer_connect
             )
         }

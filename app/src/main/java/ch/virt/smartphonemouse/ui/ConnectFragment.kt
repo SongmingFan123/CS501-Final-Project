@@ -14,14 +14,13 @@ import ch.virt.smartphonemouse.ui.connect.ConnectFailedSubfragment
 import ch.virt.smartphonemouse.ui.connect.ConnectSelectSubfragment
 
 /**
- * This fragment allows the user to see the current connection status and to change it.
+ * This fragment to show the user the current connection status and allow the user to change it.
  */
 class ConnectFragment
 /**
- * Creates the fragment.
- *
- * @param bluetooth bluetooth handler used for bluetooth operations
- */(private val bluetooth: BluetoothHandler?) : Fragment(R.layout.fragment_connect) {
+ * Fragment created
+ */
+    (private val bluetooth: BluetoothHandler?) : Fragment(R.layout.fragment_connect) {
     private var status: ImageView? = null
     private var statusText: TextView? = null
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -32,60 +31,24 @@ class ConnectFragment
     }
 
     /**
-     * Updates the content on the page according to the current status.
+     * content of page updated depending on the current status
      */
     fun update() {
         if (bluetooth!!.isInitialized) {
             if (bluetooth.isConnecting) {
-                loadFragment(ConnectConnectingSubfragment())
-                setStatus(R.color.status_connecting, R.string.connect_status_connecting)
+                childFragmentManager.beginTransaction().setReorderingAllowed(true).replace(R.id.connect_container, ConnectConnectingSubfragment()).commit()
+                (status!!.background as GradientDrawable).setColor(resources.getColor(R.color.status_connecting, null))
+                statusText!!.setText(R.string.connect_status_connecting)
             } else if (!bluetooth.isConnected) {
-                if (bluetooth.host?.hasFailed() == true) {
-                    val fragment = ConnectFailedSubfragment(bluetooth)
-                    fragment.setReturnListener (object : ConnectFailedSubfragment.ReturnListener {
-                        override fun returned() {
-                            update()
-                        }
-                    })
-                    loadFragment(fragment)
-                } else loadFragment(ConnectSelectSubfragment(bluetooth))
-                setStatus(R.color.status_disconnected, R.string.connect_status_disconnected)
+                childFragmentManager.beginTransaction().setReorderingAllowed(true).replace(R.id.connect_container, ConnectSelectSubfragment(bluetooth)).commit()
+                (status!!.background as GradientDrawable).setColor(resources.getColor(R.color.status_disconnected, null))
+                statusText!!.setText(R.string.connect_status_disconnected)
             } else {
-                loadFragment(ConnectConnectedSubfragment(bluetooth))
-                setStatus(R.color.status_connected, R.string.connect_status_connected)
+                childFragmentManager.beginTransaction().setReorderingAllowed(true).replace(R.id.connect_container, ConnectConnectedSubfragment(bluetooth)).commit()
+                (status!!.background as GradientDrawable).setColor(resources.getColor(R.color.status_connected, null))
+                statusText!!.setText(R.string.connect_status_connected)
             }
         }
     }
-//    fun update() {
-//        if (bluetooth!!.isInitialized) {
-//            if (!bluetooth.isConnected) {
-//                loadFragment(ConnectSelectSubfragment(bluetooth))
-//                setStatus(R.color.status_disconnected, R.string.connect_status_disconnected)
-//            } else {
-//                loadFragment(ConnectConnectedSubfragment(bluetooth))
-//                setStatus(R.color.status_connected, R.string.connect_status_connected)
-//            }
-//        }
-//    }
 
-    /**
-     * Sets the status of the page.
-     *
-     * @param color color of the current status
-     * @param text  name of the current status
-     */
-    private fun setStatus(color: Int, text: Int) {
-        (status!!.background as GradientDrawable).setColor(resources.getColor(color, null))
-        statusText!!.setText(text)
-    }
-
-    /**
-     * Sets the inner content to the requested fragment.
-     *
-     * @param fragment fragment to set to
-     */
-    private fun loadFragment(fragment: Fragment) {
-        childFragmentManager.beginTransaction().setReorderingAllowed(true)
-            .replace(R.id.connect_container, fragment).commit()
-    }
 }

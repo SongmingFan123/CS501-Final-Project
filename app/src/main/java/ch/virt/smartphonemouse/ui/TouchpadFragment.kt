@@ -30,7 +30,7 @@ class TouchpadFragment
  *
  * @param mouse the movement to attach to
  */(private val mouse: MouseInputs?) :
-    Fragment(R.layout.fragment_mouse) {
+    Fragment(R.layout.fragment_touchpad) {
     private var root: RelativeLayout? = null
     private var width = 0
     private var height = 0
@@ -53,7 +53,7 @@ class TouchpadFragment
 
 
     // Feedback
-    private var visuals = true
+    private var visuals = false
     private var viewIntensity = 0.5f
     private var vibrations = true
     private var buttonIntensity = 100

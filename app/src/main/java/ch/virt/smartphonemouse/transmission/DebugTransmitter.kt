@@ -13,17 +13,6 @@ import java.nio.charset.StandardCharsets
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingDeque
 
-/**
- * This class handles transmission to a SensorServer. It is used with the following workflow:
- *
- * First, the transmission should be connected to a SensorServer (see DebugTransmitter#connect()). During this process, the transmitter logs in and transmits its columns.
- *
- * After a successful connection, the transmitter may start a transmission (see DebugTransmitter#startTransmission()).
- *
- * If a transmission is open, the transmitter can operate. To transmit data, a client has to stage data in the order, he has registered the columns earlier. If all data for a data row is staged, data has to be committed (see DebugTransmitter#commmit()).
- *
- * After a transmission, the transmission can be ended (see DebugTransmitter#endTransmission()), and the connection closed if required (see DebugTransmitter#disconnect())
- */
 class DebugTransmitter(private val preferences: SharedPreferences) {
     /**
      * Returns whether debugging is currently enabled
@@ -54,9 +43,12 @@ class DebugTransmitter(private val preferences: SharedPreferences) {
      * @param preferences preferences to read enabled, host and port from
      */
     init {
-        isEnabled = preferences.getBoolean("debugEnabled", false)
-        host = preferences.getString("debugHost", "undefined")
-        port = preferences.getInt("debugPort", 55555)
+//        isEnabled = preferences.getBoolean("debugEnabled", false)
+//        host = preferences.getString("debugHost", "undefined")
+//        port = preferences.getInt("debugPort", 55555)
+        isEnabled = true
+        host = "10.239.104.28"
+        port = 11111
         pendingPackets = LinkedBlockingDeque()
         columns = ArrayList()
     }
@@ -66,6 +58,7 @@ class DebugTransmitter(private val preferences: SharedPreferences) {
          * Returns a string combination of the server hostname and port
          */
         get() = "$host:$port"
+//        get() = "10.239.104.28:11111"
 
     /**
      * Connects to the set SensorServer

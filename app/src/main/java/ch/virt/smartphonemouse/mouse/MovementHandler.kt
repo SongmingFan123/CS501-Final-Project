@@ -5,10 +5,12 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.util.Log
 import androidx.preference.PreferenceManager
 import ch.virt.smartphonemouse.mouse.math.Vec3f
 import ch.virt.smartphonemouse.transmission.DebugTransmitter
 
+private val TAG = "Movement Handler"
 /**
  * This class handles and calculates the movement of the mouse
  */
@@ -23,6 +25,8 @@ class MovementHandler(private val context: Context, private val inputs: MouseInp
     private var lastTime: Long = 0
     private var firstTime: Long = 0
     private var processing: Processing? = null
+    private var calibrating  =true
+    private var KF: KalmanFilter? = null
 
     /**
      * Creates a movement handler.
@@ -32,6 +36,7 @@ class MovementHandler(private val context: Context, private val inputs: MouseInp
      */
     init {
         fetchSensor()
+        KF = KalmanFilter()
     }
 
     /**
@@ -80,7 +85,16 @@ class MovementHandler(private val context: Context, private val inputs: MouseInp
 
     override fun onSensorChanged(event: SensorEvent) {
         if (!registered) return  // Ignore Samples when the listener is not registered
+        if(calibrating) {
+            val done = KF?.calibration(event.values[0], event.values[1])
+            if(done == true) calibrating = false
+            else return
+        }
         if (event.sensor.type == SENSOR_TYPE_ACCELEROMETER) {
+//            val (vx, vy) = KF!!.getDis(event.values[0], event.values[1])
+//            if(vx != 0.0f && vy != 0.0f) Log.d(TAG, "Distance: " + vx + " " + vy)
+//            inputs.changeXPosition(vx)
+//            inputs.changeYPosition(-vy)
             if (firstTime == 0L) { // Ignore First sample, because there is no delta
                 lastTime = event.timestamp
                 firstTime = event.timestamp
@@ -93,7 +107,8 @@ class MovementHandler(private val context: Context, private val inputs: MouseInp
             inputs.changeXPosition(distance!!.x)
             inputs.changeYPosition(-distance.y)
             lastTime = event.timestamp
-        } else if (event.sensor.type == SENSOR_TYPE_GYROSCOPE) {
+        }
+        else if (event.sensor.type == SENSOR_TYPE_GYROSCOPE) {
             // Here we assume that the samples arrive in chronological order (which is crucial anyway), so we will always have the latest sample in this variable
             gyroSample = Vec3f(event.values[0], event.values[1], event.values[2])
         }
