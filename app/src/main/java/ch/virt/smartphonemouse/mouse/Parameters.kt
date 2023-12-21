@@ -4,52 +4,6 @@ import android.content.SharedPreferences
 
 private const val TAG = "Parameters"
 class Parameters(private val prefs: SharedPreferences) {
-    var isCalibrated: Boolean
-        get() = prefs.getBoolean("movementCalibrated", false)
-        set(calibrated) {
-            prefs.edit().putBoolean("movementCalibrated", calibrated).apply()
-        }
-    val calibrationNoiseTime: Float
-        get() = prefs.getFloat("movementCalibrationNoise", CALIBRATION_NOISE)
-    val calibrationSamplingTime: Float
-        get() = prefs.getFloat("movementCalibrationSampling", CALIBRATION_SAMPLING)
-
-    fun calibrateSamplingRate(samplingRate: Float) {
-        val edit = prefs.edit()
-        edit.putFloat("movementSampling", samplingRate)
-        edit.apply()
-    }
-
-    fun measureNoise(accelerationNoise: MutableList<Float>?, rotationNoise: MutableList<Float>?) {
-        accelerationNoise?.sortWith { obj: Float, anotherFloat: Float ->
-            obj.compareTo(anotherFloat)
-        }
-        rotationNoise?.sortWith { obj: Float, anotherFloat: Float? ->
-            obj.compareTo(
-                anotherFloat!!
-            )
-        }
-
-        var accelerationSample = accelerationNoise!![((accelerationNoise.size - 1) * prefs.getFloat(
-            "movementNoiseRatioAcceleration",
-            NOISE_RATIO_ACCELERATION
-        )).toInt()]
-        accelerationSample *= prefs.getFloat(
-            "movementNoiseFactorAcceleration",
-            NOISE_FACTOR_ACCELERATION
-        )
-
-        var rotationSample = rotationNoise!![((rotationNoise.size - 1) * prefs.getFloat(
-            "movementNoiseRatioRotation",
-            NOISE_RATIO_ROTATION
-        )).toInt()]
-        rotationSample *= prefs.getFloat("movementNoiseFactorRotation", NOISE_FACTOR_ROTATION)
-
-        val edit = prefs.edit()
-        edit.putFloat("movementThresholdAcceleration", accelerationSample)
-        edit.putFloat("movementThresholdRotation", rotationSample)
-        edit.apply()
-    }
 
     val lengthWindowGravity: Int
         get() = Math.round(
@@ -59,11 +13,6 @@ class Parameters(private val prefs: SharedPreferences) {
     val lengthWindowNoise: Int
         get() = Math.round(
             prefs.getFloat("movementDurationWindowNoise", DURATION_WINDOW_NOISE)
-                    * prefs.getFloat("movementSampling", 500f)
-        )
-    val lengthThreshold: Int
-        get() = Math.round(
-            prefs.getFloat("movementDurationThreshold", DURATION_THRESHOLD)
                     * prefs.getFloat("movementSampling", 500f)
         )
     val lengthGravity: Int

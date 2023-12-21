@@ -168,7 +168,6 @@ class MainActivity : AppCompatActivity(),
      */
     fun navigate(entry: Int): Boolean {
         if (entry == R.id.drawer_mouse) {
-            Log.d(TAG, "isCalibrated: " + Parameters(PreferenceManager.getDefaultSharedPreferences(this)).isCalibrated)
             bar!!.visibility = View.GONE
             switchFragment(MouseFragment(inputs, movement), false)
             mouseActive = true
