@@ -15,7 +15,6 @@ import ch.virt.smartphonemouse.transmission.BluetoothHandler
 import ch.virt.smartphonemouse.ui.home.HomeConnectedSubfragment
 import ch.virt.smartphonemouse.ui.home.HomeDisabledSubfragment
 import ch.virt.smartphonemouse.ui.home.HomeDisconnectedSubfragment
-import ch.virt.smartphonemouse.ui.home.HomeUnsupportedSubfragment
 
 /**
  * This fragment contains the home page of the app, which shows basic information.
@@ -53,8 +52,7 @@ class HomeFragment
             HomeDisabledSubfragment(
                 bluetooth
             )
-        )
-        else if (bluetooth.isConnected) setStatus(
+        )else if (bluetooth.isConnected) setStatus(
             R.color.status_connected,
             R.string.home_status_connected,
             R.string.home_button_connected,

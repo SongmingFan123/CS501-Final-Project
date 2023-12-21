@@ -7,10 +7,6 @@
     <string name="title_home">Home</string>
     <string name="home_status_init">Initializing</string>
     <string name="home_button_init">Initializing</string>
-    <string name="home_status_unsupported">Unsupported</string>
-    <string name="home_button_unsupported">Return</string>
-    <string name="home_unsupported_message">Your device does not seem to support the bluetooth HID profile that is required to run this app. <br /> Not all devices do support this profile. Sometimes, support for this profile may be added in a firmware update.</string>
-    <string name="home_unsupported_playstore">Open in Play Store</string>
     <string name="home_status_disconnected">Disconnected</string>
     <string name="home_button_disconnected">Connect</string>
     <string name="home_connected_message">Connected to:</string>
