@@ -13,7 +13,6 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import ch.virt.smartphonemouse.MainActivity
-import ch.virt.smartphonemouse.transmission.hid.HidDevice
 
 private const val TAG = "BluetoothHandler"
 // This class handles the bluetooth.
