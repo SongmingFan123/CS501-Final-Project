@@ -24,8 +24,8 @@ import ch.virt.smartphonemouse.mouse.MouseInputs
 
 class TouchpadFragment
 
-  //Creates the Touchpad Fragment.
- (private val mouse: MouseInputs?) :
+ // Creates the Touchpad Fragment.
+(private val mouse: MouseInputs?) :
     Fragment(R.layout.fragment_touchpad) {
     private var root: RelativeLayout? = null
     private var width = 0

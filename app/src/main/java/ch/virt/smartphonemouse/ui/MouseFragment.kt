@@ -6,7 +6,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
-import android.os.VibratorManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -22,40 +21,32 @@ import ch.virt.smartphonemouse.R
 import ch.virt.smartphonemouse.mouse.MouseInputs
 import ch.virt.smartphonemouse.mouse.MovementHandler
 
-/**
- * This fragment represents the mouse interface the user uses to input button clicks.
- */
+private const val TAG = "MouseFragment"
+// This fragment represents the mouse fragment.
 class MouseFragment
-/**
- * Creates a Mouse Fragment.
- *
- * @param mouse the movement to attach to
- */(private val mouse: MouseInputs?, private val movement: MovementHandler?) :
+(private val mouse: MouseInputs?) :
     Fragment(R.layout.fragment_mouse) {
     private var root: RelativeLayout? = null
     private var width = 0
     private var height = 0
-    private var theme = false // false = light, true = dark
 
     // Feedback
-    private var visuals = false
-    private var buttonsStrokeWeight = 0
-    private var viewIntensity = 0f
-    private var vibrations = false
-    private var buttonIntensity = 0
-    private var buttonLength = 0
-    private var scrollIntensity = 0
-    private var scrollLength = 0
-    private var specialIntensity = 0
-    private var specialLength = 0
+    private var buttonsStrokeWeight = 4
+    private var viewIntensity = 0.5f
+    private var buttonIntensity = 100
+    private var buttonLength = 30
+    private var scrollIntensity = 50
+    private var scrollLength = 20
+    private var specialIntensity = 100
+    private var specialLength = 50
     private var leftView: View? = null
     private var rightView: View? = null
     private var middleView: View? = null
     private var vibrator: Vibrator? = null
 
     // Buttons
-    private var buttonsHeight = 0f
-    private var buttonsMiddleWidth = 0f
+    private var buttonsHeight = 0.3f
+    private var buttonsMiddleWidth = 0.2f
     private var leftX = 0
     private var leftY = 0
     private var leftWidth = 0
@@ -73,33 +64,21 @@ class MouseFragment
     var middle = false
 
     // Middle Specific
-    private var middleClickWait = 0
-    private var scrollThreshold = 0
+    private var middleClickWait = 300
+    private var scrollThreshold = 50
     private var middleStart = 0
     private var middleStartTime: Long = 0
     private var middleDecided = false
     private var middleScrolling = false
-    private val TAG = "MouseFragment"
-    /**
-     * Reads the settings for the fragment from the preferences.
-     */
-    private fun readSettings() {
-        val prefs = context?.let { PreferenceManager.getDefaultSharedPreferences(it) }
-        theme = prefs!!.getString("interfaceTheme", "dark") == "dark"
-        scrollThreshold = prefs.getInt("interfaceBehaviourScrollStep", 50)
-        middleClickWait = prefs.getInt("interfaceBehaviourSpecialWait", 300)
-        visuals = prefs.getBoolean("interfaceVisualsEnable", true)
-        buttonsStrokeWeight = prefs.getInt("interfaceVisualsStrokeWeight", 4)
-        viewIntensity = prefs.getFloat("interfaceVisualsIntensity", 0.5f)
-        vibrations = prefs.getBoolean("interfaceVibrationsEnable", true)
-        buttonIntensity = prefs.getInt("interfaceVibrationsButtonIntensity", 100)
-        buttonLength = prefs.getInt("interfaceVibrationsButtonLength", 30)
-        scrollIntensity = prefs.getInt("interfaceVibrationsScrollIntensity", 50)
-        scrollLength = prefs.getInt("interfaceVibrationsScrollLength", 20)
-        specialIntensity = prefs.getInt("interfaceVibrationsSpecialIntensity", 100)
-        specialLength = prefs.getInt("interfaceVibrationsSpecialLength", 50)
-        buttonsHeight = prefs.getFloat("interfaceLayoutHeight", 0.3f)
-        buttonsMiddleWidth = prefs.getFloat("interfaceLayoutMiddleWidth", 0.2f)
+
+    @SuppressLint("ClickableViewAccessibility", "ServiceCast")
+    private fun init() {
+        root!!.post {
+            calculate()
+            createVisuals()
+        }
+        root!!.setOnTouchListener { v: View?, event: MotionEvent -> viewTouched(event) }
+        vibrator = requireContext().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
     }
 
     override fun onCreateView(
@@ -107,32 +86,22 @@ class MouseFragment
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        readSettings() // Read settings first to determine whether visuals are turned on
-
-        // Set system view visibility
         requireActivity().window.statusBarColor =
-            resources.getColor(if (theme) R.color.mouse_background_dark else R.color.mouse_background_light)
+            resources.getColor(R.color.mouse_background_dark)
         requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (!visuals) requireActivity().window.insetsController!!.hide(WindowInsets.Type.statusBars())
             requireActivity().window.insetsController!!.hide(WindowInsets.Type.mandatorySystemGestures())
             requireActivity().window.insetsController!!.hide(WindowInsets.Type.systemGestures())
             requireActivity().window.insetsController!!.hide(WindowInsets.Type.navigationBars())
-        } else {
-            if (!visuals) requireActivity().window.decorView.systemUiVisibility =
-                View.SYSTEM_UI_FLAG_FULLSCREEN
         }
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
     override fun onDestroyView() {
-
-        // Unset system view visibility
         requireActivity().window.statusBarColor =
             resources.getColor(R.color.design_default_color_primary_dark)
         requireActivity().window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (!visuals) requireActivity().window.insetsController!!.show(WindowInsets.Type.statusBars())
             requireActivity().window.insetsController!!.show(WindowInsets.Type.mandatorySystemGestures())
             requireActivity().window.insetsController!!.show(WindowInsets.Type.systemGestures())
             requireActivity().window.insetsController!!.show(WindowInsets.Type.navigationBars())
@@ -145,26 +114,11 @@ class MouseFragment
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         root = view.findViewById(R.id.mouse_root)
-        root?.setBackgroundResource(if (theme) R.color.mouse_background_dark else R.color.mouse_background_light)
+        root?.setBackgroundResource(R.color.mouse_background_dark)
         init()
     }
 
-    /**
-     * Initializes the fragment.
-     */
-    @SuppressLint("ClickableViewAccessibility", "ServiceCast")
-    private fun init() {
-        root!!.post {
-            calculate()
-            if (visuals) createVisuals()
-        }
-        root!!.setOnTouchListener { v: View?, event: MotionEvent -> viewTouched(event) }
-        if (vibrations) vibrator = requireContext().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-    }
-
-    /**
-     * Calculates the buttons size.
-     */
+    // Calculates the buttons size.
     private fun calculate() {
         width = root!!.width
         height = root!!.height
@@ -184,33 +138,34 @@ class MouseFragment
         middleWidth = width - buttonWidth * 2
     }
 
-    /**
-     * Creates the visuals.
-     */
+    // Creates the visuals.
     private fun createVisuals() {
         val horizontal = View(context)
-        horizontal.setBackgroundResource(if (theme) R.color.mouse_stroke_dark else R.color.mouse_stroke_light)
+        horizontal.setBackgroundResource(R.color.mouse_stroke_dark)
         horizontal.alpha = viewIntensity
         horizontal.layoutParams = FrameLayout.LayoutParams(width, buttonsStrokeWeight)
         horizontal.y = middleHeight.toFloat()
         horizontal.x = 0f
         root!!.addView(horizontal)
+
         val verticalLeft = View(context)
-        verticalLeft.setBackgroundResource(if (theme) R.color.mouse_stroke_dark else R.color.mouse_stroke_light)
+        verticalLeft.setBackgroundResource(R.color.mouse_stroke_dark)
         verticalLeft.alpha = viewIntensity
         verticalLeft.layoutParams = FrameLayout.LayoutParams(buttonsStrokeWeight, leftHeight)
         verticalLeft.x = (leftWidth - buttonsStrokeWeight / 2).toFloat()
         verticalLeft.y = leftY.toFloat()
         root!!.addView(verticalLeft)
+
         val verticalRight = View(context)
-        verticalRight.setBackgroundResource(if (theme) R.color.mouse_stroke_dark else R.color.mouse_stroke_light)
+        verticalRight.setBackgroundResource(R.color.mouse_stroke_dark)
         verticalRight.alpha = viewIntensity
         verticalRight.layoutParams = FrameLayout.LayoutParams(buttonsStrokeWeight, rightHeight)
         verticalRight.x = (rightX - buttonsStrokeWeight / 2).toFloat()
         verticalRight.y = rightY.toFloat()
         root!!.addView(verticalRight)
+
         leftView = View(context)
-        leftView!!.setBackgroundResource(if (theme) R.color.mouse_pressed_dark else R.color.mouse_pressed_light)
+        leftView!!.setBackgroundResource(R.color.mouse_pressed_dark)
         leftView!!.alpha = viewIntensity
         leftView!!.layoutParams =
             FrameLayout.LayoutParams(leftWidth - buttonsStrokeWeight / 2, leftHeight)
@@ -218,7 +173,7 @@ class MouseFragment
         leftView!!.y = leftY.toFloat()
         root!!.addView(leftView)
         rightView = View(context)
-        rightView!!.setBackgroundResource(if (theme) R.color.mouse_pressed_dark else R.color.mouse_pressed_light)
+        rightView!!.setBackgroundResource(R.color.mouse_pressed_dark)
         rightView!!.alpha = viewIntensity
         rightView!!.layoutParams =
             FrameLayout.LayoutParams(rightWidth - buttonsStrokeWeight / 2, rightHeight)
@@ -226,7 +181,7 @@ class MouseFragment
         rightView!!.y = rightY.toFloat()
         root!!.addView(rightView)
         middleView = View(context)
-        middleView!!.setBackgroundResource(if (theme) R.color.mouse_pressed_dark else R.color.mouse_pressed_light)
+        middleView!!.setBackgroundResource(R.color.mouse_pressed_dark)
         middleView!!.alpha = viewIntensity
         middleView!!.layoutParams =
             FrameLayout.LayoutParams(middleWidth - buttonsStrokeWeight, middleHeight)
@@ -238,12 +193,6 @@ class MouseFragment
         middleView!!.visibility = View.INVISIBLE
     }
 
-    /**
-     * Processes all touch events.
-     *
-     * @param event touch event
-     * @return whether used
-     */
     private fun viewTouched(event: MotionEvent): Boolean {
         // Temporary Variables
         var left = false
@@ -255,8 +204,6 @@ class MouseFragment
             middle = this.middle
         }
 
-
-        // Check whether a pointer is on a button, and if, check whether it is currently releasing or not
         for (i in 0 until event.pointerCount) {
             if (within(
                     event.getX(i),
@@ -306,21 +253,21 @@ class MouseFragment
                         middleStart -= scrollThreshold
                         middleDecided = true
                         middleScrolling = true
-                        setVisibility(middleView, true)
+                        requireView().visibility = View.VISIBLE
                         vibrate(scrollLength, scrollIntensity)
                     } else if (middleStart - event.getY(i) < -scrollThreshold && (!middleDecided || middleScrolling)) { // Scroll down
                         mouse!!.changeWheelPosition(-1)
                         middleStart += scrollThreshold
                         middleDecided = true
                         middleScrolling = true
-                        setVisibility(middleView, true)
+                        requireView().visibility = View.VISIBLE
                         vibrate(scrollLength, scrollIntensity)
                     } else { // Click
                         if (System.currentTimeMillis() - middleStartTime > middleClickWait && !middleDecided) {
                             mouse!!.setMiddleButton(true)
                             middleDecided = true
                             middleScrolling = false
-                            setVisibility(middleView, true)
+                            requireView().visibility = View.VISIBLE
                             vibrate(specialLength, specialIntensity)
                         }
                     }
@@ -328,7 +275,6 @@ class MouseFragment
             }
         }
 
-        // Update Feedback
         if (this.left != left) {
             vibrate(buttonLength, buttonIntensity)
         }
@@ -339,7 +285,6 @@ class MouseFragment
             if (!middle && middleDecided && !middleScrolling) vibrate(buttonLength, buttonIntensity)
         }
 
-        // Send Data
         if (this.middle != middle && !middle && middleDecided && !middleScrolling) mouse!!.setMiddleButton(
             false
         )
@@ -353,40 +298,24 @@ class MouseFragment
         this.middle = middle
         return true
     }
-
-    /**
-     * If the vibrations of the device are enabled, the device vibrates
-     */
+    //If the vibrations of the device are enabled, the device vibrates
     private fun vibrate(length: Int, intensity: Int) {
-        if (vibrations) vibrator!!.vibrate(
+        vibrator!!.vibrate(
             VibrationEffect.createOneShot(
                 length.toLong(),
                 intensity
             )
         )
     }
-
-    /**
-     * Setting the visibility of a view when the visuals are enabled.
-     */
-    private fun setVisibility(view: View?, visible: Boolean) {
-        if (!visuals) return
-        if (visible) requireView().visibility = View.VISIBLE else requireView().visibility = View.INVISIBLE
-    }
-
-    companion object {
-        /**
-         * Checking if given coordinates are within a given boundary
-         */
-        private fun within(
-            touchX: Float,
-            touchY: Float,
-            x: Int,
-            y: Int,
-            width: Int,
-            height: Int
-        ): Boolean {
-            return touchX > x && touchX < x + width && touchY > y && touchY < y + height
-        }
+    //check if the input is within a certain range
+    private fun within(
+        touchX: Float,
+        touchY: Float,
+        x: Int,
+        y: Int,
+        width: Int,
+        height: Int
+    ): Boolean {
+        return touchX > x && touchX < x + width && touchY > y && touchY < y + height
     }
 }

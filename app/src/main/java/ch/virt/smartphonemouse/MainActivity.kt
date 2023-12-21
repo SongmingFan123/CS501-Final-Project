@@ -137,7 +137,7 @@ class MainActivity : AppCompatActivity(),
     fun navigate(entry: Int): Boolean {
         if (entry == R.id.drawer_mouse) {
             bar!!.visibility = View.GONE
-            switchFragment(MouseFragment(inputs, movement), false)
+            switchFragment(MouseFragment(inputs), false)
             mouseActive = true
             movement!!.create(debug)
             debug!!.connect()

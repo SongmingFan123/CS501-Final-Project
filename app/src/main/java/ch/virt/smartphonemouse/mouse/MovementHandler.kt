@@ -62,7 +62,7 @@ class MovementHandler(private val context: Context, private val inputs: MouseInp
         manager!!.unregisterListener(this, gyroscope)
         registered = false
     }
-
+    //handle sensor change given sensor event
     override fun onSensorChanged(event: SensorEvent) {
         if (!registered) return
         if (event.sensor.type == SENSOR_TYPE_ACCELEROMETER) {
@@ -84,7 +84,7 @@ class MovementHandler(private val context: Context, private val inputs: MouseInp
             gyroSample = Vec3f(event.values[0], event.values[1], event.values[2])
         }
     }
-
+    //accuracy change handler
     override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {}
 
     companion object {
