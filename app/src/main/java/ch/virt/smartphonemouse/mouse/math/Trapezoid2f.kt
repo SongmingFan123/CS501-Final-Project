@@ -1,4 +1,4 @@
-package ch.virt.smartphonemouse.mouse.components
+package ch.virt.smartphonemouse.mouse.math
 
 import ch.virt.smartphonemouse.mouse.math.Vec2f
 

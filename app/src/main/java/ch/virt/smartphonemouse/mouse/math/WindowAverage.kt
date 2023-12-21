@@ -1,4 +1,4 @@
-package ch.virt.smartphonemouse.mouse.components
+package ch.virt.smartphonemouse.mouse.math
 
 // This class represents a vec2 average which operates in a window.
 class WindowAverage(length: Int) {

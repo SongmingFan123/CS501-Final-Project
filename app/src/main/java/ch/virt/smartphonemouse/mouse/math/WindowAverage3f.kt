@@ -1,6 +1,4 @@
-package ch.virt.smartphonemouse.mouse.components
-
-import ch.virt.smartphonemouse.mouse.math.Vec3f
+package ch.virt.smartphonemouse.mouse.math
 
 // This class represents a vec3 average which operates in a window.
 class WindowAverage3f(length: Int) {

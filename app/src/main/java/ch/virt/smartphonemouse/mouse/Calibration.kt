@@ -1,7 +1,7 @@
 package ch.virt.smartphonemouse.mouse
 
 import android.util.Log
-import ch.virt.smartphonemouse.mouse.components.WindowAverage
+import ch.virt.smartphonemouse.mouse.math.WindowAverage
 import ch.virt.smartphonemouse.mouse.math.Vec3f
 
 private const val TAG = "Calibration"

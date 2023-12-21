@@ -74,7 +74,7 @@ class MovementHandler(private val context: Context, private val inputs: MouseInp
             val delta = (event.timestamp - lastTime) * NANO_FULL_FACTOR
             val time = (event.timestamp - firstTime) * NANO_FULL_FACTOR
             val acceleration = Vec3f(event.values[0], event.values[1], event.values[2])
-            Log.d(TAG, "" + gyroSample.x + " " + gyroSample.y + " " + gyroSample.z)
+//            Log.d(TAG, "" + gyroSample.x + " " + gyroSample.y + " " + gyroSample.z)
             val distance = processing!!.step(time, delta, acceleration, gyroSample)
             inputs.changeXPosition(distance!!.x)
             inputs.changeYPosition(-distance.y)

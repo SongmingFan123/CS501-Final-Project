@@ -1,9 +1,9 @@
 package ch.virt.smartphonemouse.mouse
 
-import ch.virt.smartphonemouse.mouse.components.Trapezoid2f
-import ch.virt.smartphonemouse.mouse.components.Trapezoid3f
-import ch.virt.smartphonemouse.mouse.components.WindowAverage
-import ch.virt.smartphonemouse.mouse.components.WindowAverage3f
+import ch.virt.smartphonemouse.mouse.math.Trapezoid2f
+import ch.virt.smartphonemouse.mouse.math.Trapezoid3f
+import ch.virt.smartphonemouse.mouse.math.WindowAverage
+import ch.virt.smartphonemouse.mouse.math.WindowAverage3f
 import ch.virt.smartphonemouse.mouse.math.Vec2f
 import ch.virt.smartphonemouse.mouse.math.Vec3f
 import ch.virt.smartphonemouse.transmission.DebugTransmitter
