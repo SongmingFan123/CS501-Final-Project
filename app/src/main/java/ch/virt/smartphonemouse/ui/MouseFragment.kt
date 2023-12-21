@@ -298,7 +298,7 @@ class MouseFragment
         this.middle = middle
         return true
     }
-
+    //If the vibrations of the device are enabled, the device vibrates
     private fun vibrate(length: Int, intensity: Int) {
         vibrator!!.vibrate(
             VibrationEffect.createOneShot(
@@ -307,7 +307,7 @@ class MouseFragment
             )
         )
     }
-
+    //check if the input is within a certain range
     private fun within(
         touchX: Float,
         touchY: Float,
