@@ -48,10 +48,6 @@ class KalmanFilter() {
         // Calibration steps
         val axCalibrated = ax.toDouble() - axave
         val ayCalibrated = ay.toDouble() - ayave
-//        val axCalibrated = ax.toDouble() - 0.0
-//        val ayCalibrated = ay.toDouble() - 0.0
-//        if(abs(axCalibrated) > 0.1 && abs(ayCalibrated) > 0.1)
-//            Log.d(TAG, "Calibrated Acc: " + axCalibrated + " " + ayCalibrated)
 
         // Apply Kalman filter for both axes
         val (filteredAx, updatedXVar) = kalmanFilter(axCalibrated, xPreData, xVar, Q, R)
@@ -79,10 +75,6 @@ class KalmanFilter() {
             vy += dvy.toFloat()
         }
 
-        // Update cursor position (assuming 'win32api' is used to control cursor)
-//        val resx: Float = if(vx > 0.001) vx.toFloat() else 0.0f
-//        val resy: Float = if(vy > 0.001) vy.toFloat() else 0.0f
-//        return Pair(resx, resy)
         return Pair(vx.toFloat(), vy.toFloat())
     }
 

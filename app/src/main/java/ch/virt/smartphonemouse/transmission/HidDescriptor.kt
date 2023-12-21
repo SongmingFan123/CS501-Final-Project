@@ -1,4 +1,4 @@
-package ch.virt.smartphonemouse.transmission.hid
+package ch.virt.smartphonemouse.transmission
 
 /**
  * This class holds the Hid Descriptor used for this app.

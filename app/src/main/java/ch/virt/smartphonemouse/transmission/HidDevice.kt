@@ -1,4 +1,4 @@
-package ch.virt.smartphonemouse.transmission.hid
+package ch.virt.smartphonemouse.transmission
 
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothHidDevice
@@ -7,8 +7,6 @@ import android.content.Context
 import android.os.SystemClock
 import android.util.Log
 import ch.virt.smartphonemouse.MainActivity
-import ch.virt.smartphonemouse.transmission.BluetoothHandler
-import ch.virt.smartphonemouse.transmission.HostDevice
 
 private const val TAG = "HidDevice"
 // This class is used to interact and use the bluetooth hid profile.
@@ -38,13 +36,16 @@ class HidDevice
     // Registers the app as a hid.
     fun register() {
         if (!isRegistered)
-            Log.d(TAG, "Register Result: " + service!!.registerApp(
-                createSDP(),
-                null,
-                null,
-                context.mainExecutor,
-                this
-            ))
+            Log.d(
+                TAG,
+                "Register Result: " + service!!.registerApp(
+                    createSDP(),
+                    null,
+                    null,
+                    context.mainExecutor,
+                    this
+                )
+            )
         else Log.d(
             TAG, "The Device is already registered!"
         )
@@ -52,7 +53,10 @@ class HidDevice
 
     override fun onAppStatusChanged(pluggedDevice: BluetoothDevice, registered: Boolean) {
         isRegistered = registered
-        Log.d(TAG, "The hid device is now " + if (registered) "registered" else "NOT registered")
+        Log.d(
+            TAG,
+            "The hid device is now " + if (registered) "registered" else "NOT registered"
+        )
     }
 
     override fun onConnectionStateChanged(de: BluetoothDevice, state: Int) {
@@ -95,16 +99,25 @@ class HidDevice
 
     // Disconnects from the host device.
     fun disconnect() {
-        Log.d(TAG, "" + isRegistered + isConnected + isConnecting)
+        Log.d(
+            TAG,
+            "" + isRegistered + isConnected + isConnecting
+        )
         if (isRegistered && isConnected && !isConnecting) {
             service!!.disconnect(device)
-        } else Log.d(TAG, "Cannot connect to host whilst connecting or not being connected")
+        } else Log.d(
+            TAG,
+            "Cannot connect to host whilst connecting or not being connected"
+        )
     }
 
     // Sends a report to the host device.
     fun sendReport(left: Boolean, middle: Boolean, right: Boolean, wheel: Int, x: Int, y: Int) {
         if (!isRegistered || !isConnected || isConnecting) {
-            Log.d(TAG, "Cannot send a report to the host when no device is connected successfully!")
+            Log.d(
+                TAG,
+                "Cannot send a report to the host when no device is connected successfully!"
+            )
             return
         }
         val report = ByteArray(4)

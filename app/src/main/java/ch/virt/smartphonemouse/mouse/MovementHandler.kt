@@ -10,38 +10,24 @@ import androidx.preference.PreferenceManager
 import ch.virt.smartphonemouse.mouse.math.Vec3f
 import ch.virt.smartphonemouse.transmission.DebugTransmitter
 
-private val TAG = "Movement Handler"
-/**
- * This class handles and calculates the movement of the mouse
- */
+private const val TAG = "Movement Handler"
+// This class handles and calculates the movement of the mouse
 class MovementHandler(private val context: Context, private val inputs: MouseInputs) :
     SensorEventListener {
     private var manager: SensorManager? = null
     private var accelerometer: Sensor? = null
     private var gyroscope: Sensor? = null
+    private var gyroSample = Vec3f()
     private var registered = false
-    private var gyroSample =
-        Vec3f() // TODO: Make this a buffer to accommodate for vastly different sampling rates
     private var lastTime: Long = 0
     private var firstTime: Long = 0
     private var processing: Processing? = null
-    private var calibrating  =true
-    private var KF: KalmanFilter? = null
 
-    /**
-     * Creates a movement handler.
-     *
-     * @param context context to get the sensor from
-     * @param inputs  inputs to send the movement to
-     */
     init {
         fetchSensor()
-        KF = KalmanFilter()
     }
 
-    /**
-     * Creates the signal processing pipelines.
-     */
+    // Creates the signal processing pipelines.
     fun create(debug: DebugTransmitter?) {
         processing = Processing(
             debug, Parameters(
@@ -52,18 +38,14 @@ class MovementHandler(private val context: Context, private val inputs: MouseInp
         )
     }
 
-    /**
-     * Fetches the sensor from the context.
-     */
+    // Fetches the sensor from the context.
     private fun fetchSensor() {
         manager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         accelerometer = manager!!.getDefaultSensor(SENSOR_TYPE_ACCELEROMETER)
         gyroscope = manager!!.getDefaultSensor(SENSOR_TYPE_GYROSCOPE)
     }
 
-    /**
-     * Registers the sensor for this handler.
-     */
+    // Registers the sensor for this handler.
     fun register() {
         if (registered) return
         manager!!.registerListener(this, accelerometer, SAMPLING_RATE)
@@ -73,9 +55,7 @@ class MovementHandler(private val context: Context, private val inputs: MouseInp
         registered = true
     }
 
-    /**
-     * Unregisters the sensor for this handler.
-     */
+    // Unregisters the sensor for this handler.
     fun unregister() {
         if (!registered) return
         manager!!.unregisterListener(this, accelerometer)
@@ -84,18 +64,9 @@ class MovementHandler(private val context: Context, private val inputs: MouseInp
     }
 
     override fun onSensorChanged(event: SensorEvent) {
-        if (!registered) return  // Ignore Samples when the listener is not registered
-        if(calibrating) {
-            val done = KF?.calibration(event.values[0], event.values[1])
-            if(done == true) calibrating = false
-            else return
-        }
+        if (!registered) return
         if (event.sensor.type == SENSOR_TYPE_ACCELEROMETER) {
-//            val (vx, vy) = KF!!.getDis(event.values[0], event.values[1])
-//            if(vx != 0.0f && vy != 0.0f) Log.d(TAG, "Distance: " + vx + " " + vy)
-//            inputs.changeXPosition(vx)
-//            inputs.changeYPosition(-vy)
-            if (firstTime == 0L) { // Ignore First sample, because there is no delta
+            if (firstTime == 0L) {
                 lastTime = event.timestamp
                 firstTime = event.timestamp
                 return
@@ -103,13 +74,13 @@ class MovementHandler(private val context: Context, private val inputs: MouseInp
             val delta = (event.timestamp - lastTime) * NANO_FULL_FACTOR
             val time = (event.timestamp - firstTime) * NANO_FULL_FACTOR
             val acceleration = Vec3f(event.values[0], event.values[1], event.values[2])
-            val distance = processing!!.next(time, delta, acceleration, gyroSample)
+//            Log.d(TAG, "" + gyroSample.x + " " + gyroSample.y + " " + gyroSample.z)
+            val distance = processing!!.step(time, delta, acceleration, gyroSample)
             inputs.changeXPosition(distance!!.x)
             inputs.changeYPosition(-distance.y)
             lastTime = event.timestamp
         }
         else if (event.sensor.type == SENSOR_TYPE_GYROSCOPE) {
-            // Here we assume that the samples arrive in chronological order (which is crucial anyway), so we will always have the latest sample in this variable
             gyroSample = Vec3f(event.values[0], event.values[1], event.values[2])
         }
     }
