@@ -10,7 +10,6 @@ import ch.virt.smartphonemouse.R
 import ch.virt.smartphonemouse.transmission.BluetoothHandler
 import ch.virt.smartphonemouse.ui.connect.ConnectConnectedSubfragment
 import ch.virt.smartphonemouse.ui.connect.ConnectConnectingSubfragment
-import ch.virt.smartphonemouse.ui.connect.ConnectFailedSubfragment
 import ch.virt.smartphonemouse.ui.connect.ConnectSelectSubfragment
 
 

@@ -10,7 +10,7 @@ import ch.virt.smartphonemouse.MainActivity
 import ch.virt.smartphonemouse.R
 import ch.virt.smartphonemouse.transmission.BluetoothHandler
 
-// This class is a sub fragment for the connect page.
+// This class is a sub fragment for the connected page.
 private const val TAG = "ConnectedFragment"
 class ConnectConnectedSubfragment (private val bluetooth: BluetoothHandler?) :
     Fragment(R.layout.subfragment_connect_connected) {
@@ -33,22 +33,22 @@ class ConnectConnectedSubfragment (private val bluetooth: BluetoothHandler?) :
             bluetooth.host?.let { elapsed?.setBase(it.connectedSince) }
             elapsed?.setFormat(resources.getString(R.string.connect_connected_elapsed))
             elapsed?.start()
-            disconnect?.setOnClickListener(View.OnClickListener { v: View? -> bluetooth.host?.disconnect() })
-            mouse?.setOnClickListener(View.OnClickListener { v: View? ->
+            disconnect?.setOnClickListener { v: View? -> bluetooth.host?.disconnect() }
+            mouse?.setOnClickListener { v: View? ->
                 (activity as MainActivity?)!!.navigate(
                     R.id.drawer_mouse
                 )
-            })
-            touchpad?.setOnClickListener(View.OnClickListener { v: View? ->
+            }
+            touchpad?.setOnClickListener { v: View? ->
                 (activity as MainActivity?)!!.navigate(
                     R.id.drawer_touchpad
                 )
-            })
-            slide?.setOnClickListener(View.OnClickListener { v: View? ->
+            }
+            slide?.setOnClickListener { v: View? ->
                 (activity as MainActivity?)!!.navigate(
                     R.id.drawer_slides_controller
                 )
-            })
+            }
         }
     }
 }
