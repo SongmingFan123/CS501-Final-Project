@@ -1,6 +1,5 @@
 package ch.virt.smartphonemouse.transmission
 
-import android.content.SharedPreferences
 import android.os.Build
 import android.util.Log
 import ch.virt.smartphonemouse.mouse.Processing
@@ -13,7 +12,7 @@ import java.nio.charset.StandardCharsets
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingDeque
 
-class DebugTransmitter(private val preferences: SharedPreferences) {
+class DebugTransmitter {
     /**
      * Returns whether debugging is currently enabled
      */

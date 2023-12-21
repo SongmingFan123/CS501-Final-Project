@@ -16,20 +16,16 @@ import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
-import androidx.preference.PreferenceManager
 import ch.virt.smartphonemouse.R
 import ch.virt.smartphonemouse.mouse.MouseInputs
-import java.lang.Math.abs
 
-/**
- * This fragment represents the Touchpad interface the user uses to input clicks and drags
- */
+
+//This fragment represents the Touchpad interface the user uses to input clicks and drags
+
 class TouchpadFragment
-/**
- * Creates the Touchpad Fragment.
- *
- * @param mouse the movement to attach to
- */(private val mouse: MouseInputs?) :
+
+  //Creates the Touchpad Fragment.
+ (private val mouse: MouseInputs?) :
     Fragment(R.layout.fragment_touchpad) {
     private var root: RelativeLayout? = null
     private var width = 0
@@ -53,15 +49,12 @@ class TouchpadFragment
     // Feedback
     private var visuals = false
     private var viewIntensity = 0.5f
-    private var vibrations = true
     private var buttonIntensity = 100
     private var buttonLength = 100
     private var touchpadView: View? = null
     private var vibrator: Vibrator? = null
 
-    /**
-     * Create Touchpad view
-     */
+    //Create Touchpad view
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -82,9 +75,7 @@ class TouchpadFragment
         }
         return super.onCreateView(inflater, container, savedInstanceState)
     }
-    /**
-     * Destroy Touchpad view
-     */
+    //Destroy Touchpad view
     override fun onDestroyView() {
         // Unset system view visibility
         requireActivity().window.statusBarColor =
@@ -100,9 +91,7 @@ class TouchpadFragment
         }
         super.onDestroyView()
     }
-    /**
-     * Create Touchpad view and initialization
-     */
+    //Create Touchpad view and initialization
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         root = view.findViewById(R.id.touchpad_root)
@@ -110,22 +99,18 @@ class TouchpadFragment
         init()
     }
 
-    /**
-     * Touchpad Fragment initialization
-     */
+    //Touchpad Fragment initialization
     @SuppressLint("ClickableViewAccessibility")
     private fun init() {
         root!!.post {
             if (visuals) createVisuals()
         }
         root!!.setOnTouchListener { v: View?, event: MotionEvent -> viewTouched(event) }
-        if (vibrations) vibrator = requireContext().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        vibrator = requireContext().getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
     }
 
 
-    /**
-     * Creation of visualization of Touchpad
-     */
+    //Creation of visualization of Touchpad
     private fun createVisuals() {
         width = root!!.width
         height = root!!.height
@@ -139,9 +124,7 @@ class TouchpadFragment
         root!!.addView(touchpadView)
     }
 
-    /**
-     * Processes all touch events.
-     */
+    //Processes all touch events.
     private fun viewTouched(event: MotionEvent): Boolean {
         if (event.actionMasked == MotionEvent.ACTION_DOWN || event.actionMasked == MotionEvent.ACTION_POINTER_DOWN) {
             if(event.actionIndex == 0){
@@ -239,11 +222,9 @@ class TouchpadFragment
         return true
     }
 
-    /**
-     * If the vibrations of the device are enabled, the device vibrates
-     */
+    //If the vibrations of the device are enabled, the device vibrates
     private fun vibrate(length: Int, intensity: Int) {
-        if (vibrations) vibrator!!.vibrate(
+        vibrator!!.vibrate(
             VibrationEffect.createOneShot(
                 length.toLong(),
                 intensity

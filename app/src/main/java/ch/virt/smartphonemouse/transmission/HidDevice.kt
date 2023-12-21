@@ -16,7 +16,7 @@ class HidDevice
     private val bluetooth: BluetoothHandler,
     private val context: Context
 ) : BluetoothHidDevice.Callback() {
-    var isRegistered = false
+    private var isRegistered = false
     var isConnected = false
     var isConnecting = false
     var device: BluetoothDevice? = null
