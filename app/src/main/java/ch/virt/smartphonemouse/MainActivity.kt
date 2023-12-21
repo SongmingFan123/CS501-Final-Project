@@ -176,7 +176,7 @@ class MainActivity : AppCompatActivity(),
                 return true
             }
             bar!!.visibility = View.GONE
-            switchFragment(MouseFragment(inputs, movement), false)
+            switchFragment(MouseFragment(inputs), false)
             mouseActive = true
             movement!!.create(debug)
             debug!!.connect()
