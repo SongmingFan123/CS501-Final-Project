@@ -36,6 +36,20 @@
         android:text="@string/connect_connected_mouse"/>
 
     <Button
+        android:id="@+id/connect_connected_touchpad"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="?attr/materialButtonOutlinedStyle"
+        android:text="@string/connect_connected_touchpad"/>
+
+    <Button
+        android:id="@+id/connect_connected_slide"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="?attr/materialButtonOutlinedStyle"
+        android:text="@string/connect_connected_slide"/>
+
+    <Button
         android:id="@+id/connect_connected_disconnect"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
