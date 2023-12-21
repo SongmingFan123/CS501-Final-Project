@@ -23,19 +23,19 @@ import ch.virt.smartphonemouse.ui.mouse.MouseUsageDialog
 import java.lang.Math.abs
 
 /**
- * This fragment represents the mouse interface the user uses to input button clicks.
+ * This fragment represents the Touchpad interface the user uses to input clicks and drags
  */
 class TouchpadFragment
 /**
- * Creates a Mouse Fragment.
+ * Creates a Touchpad Fragment.
  *
  * @param mouse the movement to attach to
  */(private val mouse: MouseInputs?) :
-    Fragment(R.layout.fragment_mouse) {
+    Fragment(R.layout.fragment_touchpad) {
     private var root: RelativeLayout? = null
     private var width = 0
     private var height = 0
-    private var theme = false // false = light, true = dark
+    private var theme = true // false = light, true = dark
     private var xDownI = 0f
     private var yDownI = 0f
     private var xDownJ = 0f
@@ -55,10 +55,10 @@ class TouchpadFragment
 
     // Feedback
     private var visuals = false
-    private var viewIntensity = 0f
-    private var vibrations = false
-    private var buttonIntensity = 0
-    private var buttonLength = 0
+    private var viewIntensity = 0.5f
+    private var vibrations = true
+    private var buttonIntensity = 100
+    private var buttonLength = 100
     private var touchpadView: View? = null
     private var vibrator: Vibrator? = null
 
@@ -66,26 +66,11 @@ class TouchpadFragment
 
 
 
-    /**
-     * Reads the settings for the fragment from the preferences.
-     */
-    private fun readSettings() {
-        val prefs = context?.let { PreferenceManager.getDefaultSharedPreferences(it) }
-        theme = prefs!!.getString("interfaceTheme", "dark") == "dark"
-        visuals = prefs.getBoolean("interfaceVisualsEnable", true)
-        buttonIntensity = prefs.getInt("interfaceVibrationsButtonIntensity", 100)
-        buttonLength = prefs.getInt("interfaceVibrationsButtonLength", 30)
-        viewIntensity = prefs.getFloat("interfaceVisualsIntensity", 0.5f)
-        vibrations = prefs.getBoolean("interfaceVibrationsEnable", true)
-
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        readSettings() // Read settings first to determine whether visuals are turned on
 
         // Set system view visibility
         requireActivity().window.statusBarColor =
@@ -122,7 +107,7 @@ class TouchpadFragment
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        root = view.findViewById(R.id.mouse_root)
+        root = view.findViewById(R.id.touchpad_root)
         root?.setBackgroundResource(if (theme) R.color.mouse_background_dark else R.color.mouse_background_light)
         init()
     }

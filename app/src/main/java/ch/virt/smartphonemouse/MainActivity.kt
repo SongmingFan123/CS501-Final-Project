@@ -1,13 +1,11 @@
 package ch.virt.smartphonemouse
 
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.drawerlayout.widget.DrawerLayout.DrawerListener
 import androidx.fragment.app.Fragment
@@ -28,6 +26,8 @@ import ch.virt.smartphonemouse.ui.TouchpadFragment
 import ch.virt.smartphonemouse.ui.settings.dialog.CalibrateDialog
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
+import java.util.Locale
+
 
 private const val TAG = "MainActivity"
 class MainActivity : AppCompatActivity(),
@@ -141,6 +141,12 @@ class MainActivity : AppCompatActivity(),
         super.onStart()
         instanceSaved = false
         bluetooth!!.reInit()
+        for (locale in Locale.getAvailableLocales()) {
+            Log.d(
+                "LOCALES",
+                locale.language + "_" + locale.country + " [" + locale.displayName + "]"
+            )
+        }
         updateBluetoothStatus() // Current status is unknown
     }
 
