@@ -1,11 +1,14 @@
 package ch.virt.smartphonemouse.transmission
 
+import android.Manifest
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothHidDevice
 import android.bluetooth.BluetoothHidDeviceAppSdpSettings
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.SystemClock
 import android.util.Log
+import androidx.core.app.ActivityCompat
 import ch.virt.smartphonemouse.MainActivity
 
 private const val TAG = "HidDevice"
@@ -35,6 +38,20 @@ class HidDevice
 
     // Registers the app as a hid.
     fun register() {
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.BLUETOOTH_CONNECT
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
+        }
         if (!isRegistered)
             Log.d(
                 TAG,
@@ -88,6 +105,20 @@ class HidDevice
         if (bluetooth.reInitForce()) return
         if (isRegistered && !isConnected && !isConnecting) {
             device = bluetooth.getHostDevice(deviceH)
+            if (ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.BLUETOOTH_CONNECT
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return
+            }
             service!!.connect(device)
             isConnecting = true
             (context as MainActivity).updateBluetoothStatus()
@@ -104,6 +135,20 @@ class HidDevice
             "" + isRegistered + isConnected + isConnecting
         )
         if (isRegistered && isConnected && !isConnecting) {
+            if (ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.BLUETOOTH_CONNECT
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return
+            }
             service!!.disconnect(device)
         } else Log.d(
             TAG,
@@ -126,6 +171,20 @@ class HidDevice
         report[1] = x.toByte()
         report[2] = y.toByte()
         report[3] = wheel.toByte()
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.BLUETOOTH_CONNECT
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
+        }
         service!!.sendReport(device, 1, report)
     }
 }

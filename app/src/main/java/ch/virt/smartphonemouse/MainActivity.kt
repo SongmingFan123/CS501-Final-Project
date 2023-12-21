@@ -224,9 +224,7 @@ class MainActivity : AppCompatActivity(),
         if (fragment != null) {
             fragment.arguments = args
         }
-        if (fragment != null) {
-            fragment.setTargetFragment(caller, 0)
-        }
+        fragment?.setTargetFragment(caller, 0)
         if (fragment != null) {
             switchFragment(fragment, true)
         }

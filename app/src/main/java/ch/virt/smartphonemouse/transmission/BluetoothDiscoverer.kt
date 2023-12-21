@@ -1,16 +1,20 @@
 package ch.virt.smartphonemouse.transmission
 
+import android.Manifest
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
+import androidx.core.app.ActivityCompat
 import java.lang.ref.WeakReference
 
 // This class handles the discovery of new bluetooth devices to connect to.
-class BluetoothDiscoverer(context: Context, private val adapter: BluetoothAdapter?) :
+class BluetoothDiscoverer(private val context: Context, private val adapter: BluetoothAdapter?) :
     BroadcastReceiver() {
+
     var isScanning = false
     val devices: MutableList<DiscoveredDevice>
     private var updateListener: UpdateListener? = null
@@ -29,12 +33,26 @@ class BluetoothDiscoverer(context: Context, private val adapter: BluetoothAdapte
 
     // Starts the discovery for new devices
     fun startDiscovery() {
-        adapter!!.startDiscovery()
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.BLUETOOTH_SCAN
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            adapter!!.startDiscovery()
+        }
+
     }
 
     // Stops the discovery
     fun stopDiscovery() {
-        adapter!!.cancelDiscovery()
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.BLUETOOTH_SCAN
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            adapter!!.cancelDiscovery()
+        }
+
     }
 
     // Removes the already found devices.
