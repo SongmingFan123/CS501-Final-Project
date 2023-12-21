@@ -26,7 +26,7 @@ class SlidesControllerFragment (private val mouse : MouseInputs?): Fragment(R.la
     private var scrollDistance = 3
     private var previousButton : ImageButton? = null
     private var nextButton : ImageButton? = null
-
+    //create slide controller view
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -46,7 +46,7 @@ class SlidesControllerFragment (private val mouse : MouseInputs?): Fragment(R.la
         }
         return rootView
     }
-
+    //destroy slides controller view
     override fun onDestroyView() {
         requireActivity().window.statusBarColor =
             resources.getColor(R.color.design_default_color_primary_dark)
@@ -61,15 +61,15 @@ class SlidesControllerFragment (private val mouse : MouseInputs?): Fragment(R.la
         }
         super.onDestroyView()
     }
-
+    // create view and initialization of slides controller
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         root = view.findViewById(R.id.slides_controller_root)
         root?.setBackgroundResource(if (theme) R.color.mouse_background_dark else R.color.mouse_background_light)
     }
-    /**
-     * If the vibrations of the device are enabled, the device vibrates
-     */
+
+    //If the vibrations of the device are enabled, the device vibrates
+
     private fun vibrate(length: Int, intensity: Int) {
         if (vibrations) vibrator!!.vibrate(
             VibrationEffect.createOneShot(
