@@ -8,7 +8,7 @@ class WindowAverage(length: Int) {
     init {
         elements = FloatArray(length)
     }
-
+    //window average
     fun avg(next: Float): Float {
         elements[index % elements.size] = next
         index++

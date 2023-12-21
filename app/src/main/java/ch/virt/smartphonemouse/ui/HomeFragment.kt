@@ -39,43 +39,43 @@ class HomeFragment
     }
 
     /**
-     * Updates the content of the page according to the current status.
+     * Updating content of the page depending on current page status.
      */
     fun update() {
-        if (bluetooth!!.isInitialized) if (!bluetooth.isEnabled) setStatus(
-            R.color.status_init,
-            R.string.home_status_disabled,
-            R.string.home_button_disabled,
-            { v: View? -> bluetooth.enableBluetooth() },
-            HomeDisabledSubfragment(
-                bluetooth
+        if (bluetooth!!.isInitialized) if (!bluetooth.isEnabled){
+            setStatus(
+                R.color.status_init,
+                R.string.home_status_disabled,
+                R.string.home_button_disabled,
+                { v: View? -> bluetooth.enableBluetooth() },
+                HomeDisabledSubfragment(
+                    bluetooth
+                )
             )
-        )
-        else if (bluetooth.isConnected) setStatus(
-            R.color.status_connected,
-            R.string.home_status_connected,
-            R.string.home_button_connected,
-            { v: View? -> (activity as MainActivity?)!!.navigate(R.id.drawer_mouse) },
-            HomeConnectedSubfragment(
-                bluetooth
+        }
+        else if (bluetooth.isConnected){
+            setStatus(
+                R.color.status_connected,
+                R.string.home_status_connected,
+                R.string.home_button_connected,
+                { v: View? -> (activity as MainActivity?)!!.navigate(R.id.drawer_mouse) },
+                HomeConnectedSubfragment(
+                    bluetooth
+                )
             )
-        ) else setStatus(
-            R.color.status_disconnected,
-            R.string.home_status_disconnected,
-            R.string.home_button_disconnected,
-            { v: View? -> (activity as MainActivity?)!!.navigate(R.id.drawer_connect) },
-            HomeDisconnectedSubfragment()
-        )
+        }  else{
+            setStatus(
+                R.color.status_disconnected,
+                R.string.home_status_disconnected,
+                R.string.home_button_disconnected,
+                { v: View? -> (activity as MainActivity?)!!.navigate(R.id.drawer_connect) },
+                HomeDisconnectedSubfragment()
+            )
+        }
     }
 
     /**
-     * Sets the status of the page.
-     *
-     * @param statusColor    color of the status
-     * @param statusText     name of the status
-     * @param buttonText     text of the primary button of this status
-     * @param buttonListener action of the primary button of this status
-     * @param fragment       fragment to be displayed
+     * Setting page status
      */
     private fun setStatus(
         statusColor: Int,

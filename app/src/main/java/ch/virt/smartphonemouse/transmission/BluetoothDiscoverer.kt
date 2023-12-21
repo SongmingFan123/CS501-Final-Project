@@ -83,11 +83,11 @@ class BluetoothDiscoverer(context: Context, private val adapter: BluetoothAdapte
             return obj is DiscoveredDevice && address == obj.address
         }
     }
-
+    //update bluetooth listener
     interface UpdateListener {
         fun update(devices: List<DiscoveredDevice>?)
     }
-
+    //scan bluetooth listener
     interface ScanListener {
         fun changed(scanning: Boolean)
     }

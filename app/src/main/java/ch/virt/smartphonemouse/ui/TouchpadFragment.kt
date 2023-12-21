@@ -34,7 +34,7 @@ class TouchpadFragment
     private var root: RelativeLayout? = null
     private var width = 0
     private var height = 0
-    private var theme = true // false = light, true = dark
+    private var theme = true
     private var xDownI = 0f
     private var yDownI = 0f
     private var xDownJ = 0f
@@ -60,7 +60,7 @@ class TouchpadFragment
     private var vibrator: Vibrator? = null
 
     /**
-     * Create view
+     * Create Touchpad view
      */
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -83,7 +83,7 @@ class TouchpadFragment
         return super.onCreateView(inflater, container, savedInstanceState)
     }
     /**
-     * Destroy view
+     * Destroy Touchpad view
      */
     override fun onDestroyView() {
         // Unset system view visibility
@@ -101,7 +101,7 @@ class TouchpadFragment
         super.onDestroyView()
     }
     /**
-     * Create view and initialization
+     * Create Touchpad view and initialization
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -111,7 +111,7 @@ class TouchpadFragment
     }
 
     /**
-     * Fragment initialization
+     * Touchpad Fragment initialization
      */
     @SuppressLint("ClickableViewAccessibility")
     private fun init() {
@@ -124,7 +124,7 @@ class TouchpadFragment
 
 
     /**
-     * Creation of visualization
+     * Creation of visualization of Touchpad
      */
     private fun createVisuals() {
         width = root!!.width
