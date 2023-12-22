@@ -13,17 +13,13 @@ import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingDeque
 
 class DebugTransmitter {
-    /**
-     * Returns whether debugging is currently enabled
-     */
-    // A change requires a restart of the app
+
+    //Shows the status of debugging, either enabled or disabled
+
     val isEnabled: Boolean
     private val host: String?
     private val port: Int
 
-    /**
-     * Returns whether the transmitter is currently connected
-     */
     var isConnected = false
         private set
     private var connectionFailure: String? = null
@@ -37,14 +33,8 @@ class DebugTransmitter {
     private var transmitting = false
     private var currentData: ByteBuffer? = null
 
-    /**
-     * Creates a transmitter
-     * @param preferences preferences to read enabled, host and port from
-     */
+    //creation of transmitter
     init {
-//        isEnabled = preferences.getBoolean("debugEnabled", false)
-//        host = preferences.getString("debugHost", "undefined")
-//        port = preferences.getInt("debugPort", 55555)
         isEnabled = true
         host = "10.239.104.28"
         port = 11111
@@ -53,15 +43,11 @@ class DebugTransmitter {
     }
 
     val serverString: String
-        /**
-         * Returns a string combination of the server hostname and port
-         */
+        //string combination of server with hostname and port
         get() = "$host:$port"
-//        get() = "10.239.104.28:11111"
 
-    /**
-     * Connects to the set SensorServer
-     */
+
+    //connecting to SensorServer
     fun connect() {
         if (!isEnabled || isConnected) return
         Log.i(TAG, "connect: Connecting to debug host on $host:$port")
@@ -107,19 +93,13 @@ class DebugTransmitter {
         thread!!.start()
     }
 
-    /**
-     * Disconnects from the server
-     */
+    //disconnecting the server
     fun disconnect() {
         thread!!.interrupt()
         isConnected = false
     }
 
-    /**
-     * Registers a column for transmission
-     * @param name column name
-     * @param type data type of column
-     */
+    //registration of column
     fun registerColumn(name: String, type: Class<*>) {
         if (!isEnabled) return
 
@@ -145,8 +125,6 @@ class DebugTransmitter {
         } else if (Boolean::class.java == type) {
             columns.add(Column(name, TYPE_BOOL))
         }
-
-        // Update size
         var size = 0
         for (c in columns) {
             when (c.type) {
@@ -158,9 +136,7 @@ class DebugTransmitter {
         this.size = size
     }
 
-    /**
-     * Starts a new transmission
-     */
+    //initialization and starting of transmission
     fun startTransmission() {
         if (!isEnabled || !isConnected) return  // Allow when not connected, to instantly start transmission
         pendingPackets.clear() // remove packets from previous transmission if present
@@ -169,18 +145,15 @@ class DebugTransmitter {
         currentData = ByteBuffer.allocate(size)
     }
 
-    /**
-     * Ends the current transmission
-     */
+    //current transmission ended
     fun endTransmission() {
         if (!isEnabled || !isConnected || !transmitting) return
         transmitTransmission(false)
         transmitting = false
     }
 
-    /**
-     * Stages a 3d float vector
-     */
+
+    //staging a  3 dimensional float vector
     fun stageVec3f(data: Vec3f?) {
         if (!isEnabled || !isConnected || !transmitting) return
         if (currentData!!.remaining() < 3 * 4) return
@@ -189,9 +162,7 @@ class DebugTransmitter {
         currentData!!.putFloat(data.z)
     }
 
-    /**
-     * Stages a 2d float vector
-     */
+    //staging a 2 dimensional float vector
     fun stageVec2f(data: Vec2f?) {
         if (!isEnabled || !isConnected || !transmitting) return
         if (currentData!!.remaining() < 2 * 4) return
@@ -199,63 +170,49 @@ class DebugTransmitter {
         currentData!!.putFloat(data.y)
     }
 
-    /**
-     * Stages a float
-     */
+    //staging a float
     fun stageFloat(data: Float) {
         if (!isEnabled || !isConnected || !transmitting) return
         if (currentData!!.remaining() < 4) return
         currentData!!.putFloat(data)
     }
 
-    /**
-     * Stages a double
-     */
+    //staging a double
     fun stageDouble(data: Double) {
         if (!isEnabled || !isConnected || !transmitting) return
         if (currentData!!.remaining() < 8) return
         currentData!!.putDouble(data)
     }
 
-    /**
-     * Stages an integer
-     */
+    //staging an integer
     fun stageInteger(data: Int) {
         if (!isEnabled || !isConnected || !transmitting) return
         if (currentData!!.remaining() < 4) return
         currentData!!.putInt(data)
     }
 
-    /**
-     * Stages a long
-     */
+    //staging a long value
     fun stageLong(data: Long) {
         if (!isEnabled || !isConnected || !transmitting) return
         if (currentData!!.remaining() < 8) return
         currentData!!.putLong(data)
     }
 
-    /**
-     * Stages a boolean
-     */
+    //staging a boolean
     fun stageBoolean(data: Boolean) {
         if (!isEnabled || !isConnected || !transmitting) return
         if (currentData!!.remaining() < 1) return
         currentData!!.put((if (data) 0x01 else 0x00).toByte())
     }
 
-    /**
-     * Commits current staged data and transmits it to the server
-     */
+    //committing the staged data
     fun commit() {
         if (!isEnabled || !isConnected || !transmitting) return
         transmitData(currentData)
         currentData!!.clear()
     }
 
-    /**
-     * Transmits a login packet to the server
-     */
+    //login packet transmitted to server
     private fun transmitLogin() {
         // null-terminate string here --v
         val model = (Build.MODEL + '\u0000').toByteArray(StandardCharsets.US_ASCII)
@@ -265,17 +222,13 @@ class DebugTransmitter {
         pendingPackets.add(buffer)
     }
 
-    /**
-     * Reloads required columns from the Processing class
-     */
+    //reloading required columns
     private fun reloadColumns() {
         columns.clear()
         Processing.Companion.registerDebugColumns(this)
     }
 
-    /**
-     * Transmits all registered columns to the server
-     */
+    //transmission of all registered columns to server
     private fun transmitColumns() {
         for (column in columns) {
             // null-terminate string here  v
@@ -288,10 +241,7 @@ class DebugTransmitter {
         }
     }
 
-    /**
-     * Transmits the beginning or end of a transmission to the server
-     * @param start is beginning
-     */
+    //transmission of the beginning/end of transmission
     private fun transmitTransmission(start: Boolean) {
         val buffer = ByteBuffer.allocate(1 + 1) // Packet ID + Start or End
         buffer.put(ID_TRANSMISSION_STATE)
@@ -299,10 +249,8 @@ class DebugTransmitter {
         pendingPackets.add(buffer)
     }
 
-    /**
-     * Transmits processing data to the server
-     * @param data buffer to transmit
-     */
+
+    //transmission of processing data to server
     private fun transmitData(data: ByteBuffer?) {
         val buffer = ByteBuffer.allocate(1 + data!!.capacity()) // Packet ID + Data
         data.position(0)
