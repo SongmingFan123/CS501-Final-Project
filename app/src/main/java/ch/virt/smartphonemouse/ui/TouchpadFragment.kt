@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
@@ -18,6 +19,7 @@ import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import ch.virt.smartphonemouse.R
 import ch.virt.smartphonemouse.mouse.MouseInputs
+import kotlin.math.abs
 
 
 // This fragment represents the Touchpad interface the user uses to input clicks and drags
@@ -45,6 +47,7 @@ class TouchpadFragment
     private var isDragging = false
     private val LONG_HOLD_TIME_BOUND = 300
     private var oneUp = false
+    private val TAG = "Touchpad"
     // Feedback
     private var visuals = false
     private var viewIntensity = 0.5f
@@ -136,28 +139,41 @@ class TouchpadFragment
                 downTimeJ = System.currentTimeMillis().toInt()
                 xDownJ = event.x
                 yDownJ = event.y
+
             }
         }
         if(event.pointerCount == 1) {
             if(event.actionMasked == MotionEvent.ACTION_MOVE ){
                 if(!isMoving && !isDragging){
-                    if(System.currentTimeMillis().toInt() - downTimeI <= LONG_HOLD_TIME_BOUND){
-                        isMoving = true
-                        downTimeI = 0
-                    }else{
+                    if(abs(System.currentTimeMillis().toInt() - downTimeI) >= LONG_HOLD_TIME_BOUND){
                         isDragging = true
                         mouse!!.setLeftButton(true)
                         vibrate(buttonLength, buttonIntensity)
-                        downTimeI = 0
+                    }else{
+                        isMoving = true
                     }
+
+//                    Handler().postDelayed({
+//                        val results = FloatArray(1)
+//                        android.location.Location.distanceBetween(
+//                            xDownI.toDouble(), yDownI.toDouble(), event.x.toDouble(),
+//                            event.y.toDouble(),results
+//                        )
+//                        Log.d(TAG, results[0].toString())
+//                        Log.d(TAG, root!!.width.toString())
+//                        Log.d(TAG, System.currentTimeMillis().toInt().toString())
+//                        Log.d(TAG, downTimeI.toString())
+//
+//                    }, 300)
                 }
+
                 mouse!!.changeXPosition(event.y - yDownI)
                 mouse!!.changeYPosition(-(event.x - xDownI))
                 xDownI = event.x
                 yDownI = event.y
             }
             if (event.actionMasked == MotionEvent.ACTION_UP || event.actionMasked == MotionEvent.ACTION_POINTER_UP) {
-                if (System.currentTimeMillis().toInt() - downTimeI <= LONG_HOLD_TIME_BOUND || System.currentTimeMillis().toInt() - downTimeJ <= LONG_HOLD_TIME_BOUND) {
+                if (abs(System.currentTimeMillis().toInt() - downTimeI) <= LONG_HOLD_TIME_BOUND || abs(System.currentTimeMillis().toInt() - downTimeJ) <= LONG_HOLD_TIME_BOUND) {
                     if(oneUp){
                         mouse!!.setRightButton(true)
                         Thread.sleep(200)
@@ -182,7 +198,7 @@ class TouchpadFragment
             }
         }else if(event.pointerCount == 2) {
             if (event.actionMasked == MotionEvent.ACTION_UP || event.actionMasked == MotionEvent.ACTION_POINTER_UP) {
-                if (System.currentTimeMillis().toInt() - downTimeI <= LONG_HOLD_TIME_BOUND || System.currentTimeMillis().toInt() - downTimeJ <= LONG_HOLD_TIME_BOUND) {
+                if (abs(System.currentTimeMillis().toInt() - downTimeI) <= LONG_HOLD_TIME_BOUND || abs(System.currentTimeMillis().toInt() - downTimeJ) <= LONG_HOLD_TIME_BOUND) {
                     oneUp = true
                     isMoving = false
                     isDragging = false
@@ -221,6 +237,7 @@ class TouchpadFragment
             }
         }
         return true
+
     }
 
     // If the vibrations of the device are enabled, the device vibrates
