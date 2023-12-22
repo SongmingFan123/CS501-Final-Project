@@ -1,8 +1,8 @@
 package ch.virt.smartphonemouse.transmission
 
-/**
- * This class holds the Hid Descriptor used for this app.
- */
+
+ //storage of HID descriptor
+
 object HidDescriptor {
     // Tag IDs
     private const val TAG_USAGE_PAGE: Byte = 0x05
