@@ -2,25 +2,16 @@ package ch.virt.smartphonemouse.customization
 
 import android.content.SharedPreferences
 
-/**
- * This class is used for restoring the settings to their factory defaults.
- */
+//restoration the setting to default
 object DefaultSettings {
-    /**
-     * Checks whether the preferences have once been populated.
-     * If not, they get initialized to the default settings.
-     *
-     * @param preferences preferences to check in
-     */
+
+    //initializing to default setting depending the preferences previous population record
     fun check(preferences: SharedPreferences) {
         if (!preferences.getBoolean("populated", false)) set(preferences)
     }
 
-    /**
-     * Overwrites the settings to the defaults
-     *
-     * @param preferences preferences to write in
-     */
+
+    //overwriting settings to default value
     fun set(preferences: SharedPreferences) {
         val edit = preferences.edit()
         edit.putBoolean("populated", true)
@@ -40,11 +31,8 @@ object DefaultSettings {
             .apply()
     }
 
-    /**
-     * Writes the default interface settings
-     *
-     * @param preferences preferences to write in
-     */
+
+    //write default interface setting
     private fun defaultInterface(preferences: SharedPreferences) {
         val edit = preferences.edit()
         edit.putString("interfaceTheme", "dark")
@@ -66,11 +54,7 @@ object DefaultSettings {
     }
 
 
-    /**
-     * Writes the default communication settings
-     *
-     * @param preferences preferences to write in
-     */
+    //writing default communication setting
     private fun defaultCommunication(preferences: SharedPreferences) {
         val edit = preferences.edit()
         edit.putInt("communicationTransmissionRate", 100)
