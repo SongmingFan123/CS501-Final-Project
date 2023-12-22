@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ch.virt.smartphonemouse">
+    package="ch.virt.ezController">
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -20,7 +20,7 @@
         android:supportsRtl="false"
         android:theme="@style/Theme.SmartphoneMouse">
         <activity
-            android:name=".MainActivity"
+            android:name="ch.virt.ezController.MainActivity"
             android:configChanges="orientation|screenSize"
             android:exported="true"
             android:screenOrientation="portrait">
