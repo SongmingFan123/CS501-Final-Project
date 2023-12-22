@@ -18,6 +18,7 @@ import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import ch.virt.ezController.R
 import ch.virt.ezController.mouse.MouseInputs
+import java.lang.Math.abs
 
 
 // This fragment represents the Touchpad interface the user uses to input clicks and drags
