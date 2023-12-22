@@ -7,9 +7,8 @@ import androidx.fragment.app.Fragment
 import ch.virt.smartphonemouse.R
 import ch.virt.smartphonemouse.transmission.BluetoothHandler
 
-/**
- * This sub fragment on the home page gets shown when bluetooth happens to be disabled.
- */
+
+//Sub fragment that gets the home screen displayed while bluetooth is disabled.
 class HomeDisabledSubfragment
 /**
  * Creates the sub fragment.

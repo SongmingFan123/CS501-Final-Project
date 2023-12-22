@@ -13,15 +13,11 @@ import ch.virt.smartphonemouse.MainActivity
 import ch.virt.smartphonemouse.R
 import ch.virt.smartphonemouse.transmission.BluetoothHandler
 
-/**
- * This sub fragment gets shown on the home screen when a device is currently connected.
- */
+//Sub fragment that gets the home screen displayed while a device is being connected
 class HomeConnectedSubfragment
-/**
- * Creates the sub fragment.
- *
- * @param handler bluetooth handler to get connected information from
- */(private val handler: BluetoothHandler?) : Fragment(R.layout.subfragment_home_connected) {
+//Creation of the sub fragment.
+
+    (private val handler: BluetoothHandler?) : Fragment(R.layout.subfragment_home_connected) {
     private var chronometer: Chronometer? = null
     private var device: TextView? = null
     private var more: Button? = null

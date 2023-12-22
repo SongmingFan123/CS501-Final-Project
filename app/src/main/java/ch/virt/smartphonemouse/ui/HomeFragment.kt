@@ -21,16 +21,12 @@ import ch.virt.smartphonemouse.ui.home.HomeConnectedSubfragment
 import ch.virt.smartphonemouse.ui.home.HomeDisabledSubfragment
 import ch.virt.smartphonemouse.ui.home.HomeDisconnectedSubfragment
 
-/**
- * This fragment contains the home page of the app, which shows basic information.
- */
+
+//fragment containing home page of app, displaying basic info
 private const val TAG = "Home Fragment"
 class HomeFragment
-/**
- * Creates the fragment.
- *
- * @param bluetooth bluetooth handler to use
- */(private val bluetooth: BluetoothHandler?) :
+//creation of fragment
+    (private val bluetooth: BluetoothHandler?) :
     Fragment(R.layout.fragment_home) {
     private var status: ImageView? = null
     private var statusText: TextView? = null
@@ -71,9 +67,8 @@ class HomeFragment
             }
         }
 
-    /**
-     * Updating content of the page depending on current page status.
-     */
+
+    //update content of page depends on the page status
     fun update() {
         if (bluetooth!!.isInitialized) if (!bluetooth.isEnabled){
             setStatus(
@@ -107,9 +102,8 @@ class HomeFragment
         }
     }
 
-    /**
-     * Setting page status
-     */
+    //Setting page status
+
     private fun setStatus(
         statusColor: Int,
         statusText: Int,
