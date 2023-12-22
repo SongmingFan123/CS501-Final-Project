@@ -127,17 +127,17 @@ class TouchpadFragment
     private fun viewTouched(event: MotionEvent): Boolean {
         // record press start time
         if (event.actionMasked == MotionEvent.ACTION_DOWN || event.actionMasked == MotionEvent.ACTION_POINTER_DOWN) {
-            if(event.actionIndex == 0){
+
+            if (event.actionIndex == 0) {
                 downTimeI = System.currentTimeMillis().toInt()
                 xDownI = event.x
                 yDownI = event.y
-            }else if(event.actionIndex == 1){
+            } else if (event.actionIndex == 1) {
                 downTimeJ = System.currentTimeMillis().toInt()
                 xDownJ = event.x
                 yDownJ = event.y
             }
         }
-        //
         if(event.pointerCount == 1) {
             if(event.actionMasked == MotionEvent.ACTION_MOVE ){
                 if(!isMoving && !isDragging){
@@ -176,6 +176,7 @@ class TouchpadFragment
                 isMoving = false
                 isDragging = false
                 downTimeI = 0
+                downTimeJ = 0
                 oneUp = false
                 return true
             }
