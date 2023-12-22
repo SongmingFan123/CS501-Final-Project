@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Brand Colors -->
+
     <color name="secondary">#219954</color>
     <color name="secondary_dark">#0f763e</color>
     <color name="primary_dark">#151B3F</color>
     <color name="primary">#2A377E</color>
     <color name="primary_lighter">#6474CA</color>
 
-    <!-- Important Colors -->
+
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <!-- Status Colors -->
+
     <color name="status_unsupported">#2196F3</color>
     <color name="status_connected">#4CAF50</color>
     <color name="status_connecting">#FF9800</color>
     <color name="status_disconnected">#F44336</color>
     <color name="status_init">#707070</color>
 
-    <!-- Mouse Colors -->
+
     <color name="mouse_stroke_dark">#868686</color>
     <color name="mouse_stroke_light">#242424</color>
     <color name="mouse_pressed_dark">#6A666666</color>
